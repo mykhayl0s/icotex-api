@@ -1,15 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt'
+import { ERole } from 'src/common/roles.enum';
 export type UserDocument = User & Document;
 
-export enum ERole {
-  Admin = 'Admin',
-  Manager = 'Manager',
-  TeamLead = 'TeamLead',
-  Sale = 'Sale',
-  User = 'User'
-}
 
 @Schema({ versionKey: false })
 export class User {
@@ -23,7 +17,7 @@ export class User {
   name: string;
 
   @Prop({ required: true, unique: true, enum: ERole })
-  team: ERole
+  role: ERole
 
   @Prop({ required: true })
   password: string;

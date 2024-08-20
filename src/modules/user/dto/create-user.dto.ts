@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { ERole } from "../schemas/user.schema"
 import { IsEnum, IsString } from "class-validator"
+import { ERole } from "src/common/roles.enum"
 
 export class CreateUserDto {
     @ApiProperty()
@@ -17,5 +17,5 @@ export class CreateUserDto {
 
     @ApiProperty({ enum: ERole })
     @IsEnum(ERole)
-    team: ERole
+    role: ERole
 }

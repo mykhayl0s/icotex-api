@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { RequestWithUser, RolesGuard } from 'src/common/roles.guard';
+import { Roles } from 'src/common/roles.decorator';
+import { ERole } from 'src/common/roles.enum';
 
 @Controller('users')
 @ApiTags('users')
@@ -26,9 +29,10 @@ export class UsersController {
 
   @Get()
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  protected(@Body() { id }: any) {
-    return this.usersService.findOne(id)
+  @Roles(ERole.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  protected(@Req() req: RequestWithUser) {
+   return req.user
   }
 
   // @Patch(':id')

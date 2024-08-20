@@ -3,9 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/users.service';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt'
-import { User, UserDocument } from '../user/schemas/user.schema';
-import { PickType } from '@nestjs/mapped-types';
-import { OmitType } from '@nestjs/swagger';
+import { User } from '../user/schemas/user.schema';
+
 
 
 @Injectable()
@@ -17,6 +16,7 @@ export class AuthService {
 
   async validateUser({ email, password }: { email: string, password: string }): Promise<User | null> {
     const user = await this.userService.findOne(email);
+    console.log(user)
     if (user && await this.comparePassword(password, user.password)) {
       return user;
     }
@@ -33,10 +33,11 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('Invalid credentials')
     }
-    const payload = OmitType(User, ['password'])
-    console.log(payload)
+
+    delete user.password
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(JSON.parse(JSON.stringify(user))),
     };
   }
 }
