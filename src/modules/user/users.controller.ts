@@ -23,14 +23,16 @@ export class UsersController {
   // }
 
   @Get(':id')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
-  @Get()
+  @Get('user-info')
   @ApiBearerAuth()
-  @Roles(ERole.Admin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   protected(@Req() req: RequestWithUser) {
    return req.user
   }
