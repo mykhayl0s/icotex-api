@@ -6,8 +6,8 @@ import { TeamModule } from './modules/team/team.module';
 import { LeadModule } from './modules/lead/lead.module';
 
 @Module({
-  imports: [UserModule, AuthModule, MongooseModule.forRoot('mongodb://localhost/nest'), TeamModule, LeadModule],
+  imports: [UserModule, AuthModule, MongooseModule.forRoot('mongodb://localhost/icotext'), TeamModule, LeadModule],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

@@ -8,6 +8,8 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
+  const swaggerPrefix = 'api'
+
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
@@ -18,9 +20,9 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup(swaggerPrefix, app, document);
   const port = 3000
   await app.listen(port);
-  console.log(`http://localhost:${port}/api`)
+  console.log(`Swagger server started at: http://localhost:${port}/${swaggerPrefix}`)
 }
 bootstrap();
