@@ -33,8 +33,8 @@ export class LeadService {
     return transaction
   }
 
-  findAllTransactions() {
-    return this.transactionModel.find()
+  findAllTransactions(lead: string) {
+    return this.transactionModel.find({ lead: new Types.ObjectId(lead) })
   }
 
   findAll() {
