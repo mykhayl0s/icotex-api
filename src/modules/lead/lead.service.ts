@@ -33,11 +33,11 @@ export class LeadService {
   }
 
   findAll() {
-    return this.leadModel.find().populate({ path: 'transactions' })
+    return this.leadModel.find().populate({ path: 'transactions', model: 'Transaction' })
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} lead`;
+  
   }
 
   update(id: number, updateLeadDto: UpdateLeadDto) {
