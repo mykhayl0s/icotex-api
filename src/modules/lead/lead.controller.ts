@@ -39,13 +39,13 @@ export class LeadController {
     return this.leadService.createTransaction({ ...createTransactionDto, user: user._id })
   }
 
-  @Get('transactions/:lead')
+  @Get('transactions')
   @ApiBearerAuth()
   @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @ApiQuery({ name: 'skip' })
-  @ApiQuery({ name: 'limit' })
-  @ApiQuery({ name: 'lead' })
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'lead', required: false })
   findAllTransactions(@Query() { skip, limit, lead }: any) {
     return this.leadService.findAllTransactions({ lead, skip: +skip, limit: +limit });
   }
