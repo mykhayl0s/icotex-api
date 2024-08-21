@@ -38,6 +38,14 @@ export class LeadController {
     return this.leadService.createTransaction({ ...createTransactionDto, user: user._id })
   }
 
+  @Get('transactions')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  findAllTransactions() {
+    return this.leadService.findAllTransactions();
+  }
+
   @Get()
   findAll() {
     return this.leadService.findAll();

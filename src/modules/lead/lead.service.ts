@@ -33,6 +33,10 @@ export class LeadService {
     return transaction
   }
 
+  findAllTransactions() {
+    return this.transactionModel.find()
+  }
+
   findAll() {
     return this.leadModel.find().populate({ path: 'transactions', model: 'Transaction' })
   }
