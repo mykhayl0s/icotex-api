@@ -21,8 +21,8 @@ export class UsersController {
   @ApiBearerAuth()
   @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Sale)
   @UseGuards(JwtAuthGuard)
-  @ApiQuery({ name: 'skip' })
-  @ApiQuery({ name: 'limit' })
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'limit', required: false })
   findAll(@Query() { skip = 0, limit = 10 }: any) {
     return this.usersService.findAll({ skip: +skip, limit: +limit });
   }
