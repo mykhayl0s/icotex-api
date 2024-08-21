@@ -9,7 +9,7 @@ import { AuthUserPayload, RequestWithUser, RolesGuard } from 'src/common/roles.g
 import { Roles } from 'src/common/roles.decorator';
 import { ERole } from 'src/common/roles.enum';
 import { AuthUser } from 'src/common/user.decorator';
-import { query } from 'express';
+import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
 
 @Controller('lead')
 @ApiTags('lead')
@@ -48,6 +48,14 @@ export class LeadController {
   @ApiQuery({ name: 'lead', required: false })
   findAllTransactions(@Query() { skip, limit, lead }: any) {
     return this.leadService.findAllTransactions({ lead, skip: +skip, limit: +limit });
+  }
+
+  @Patch('balance')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  updateLeadBalance(@Body() dto: UpdateLeadBalance) {
+    return this.leadService.updateLeadBalance(dto)
   }
 
   @Get()

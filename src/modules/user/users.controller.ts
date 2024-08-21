@@ -17,6 +17,13 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Get('user-info')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  protected(@Req() req: RequestWithUser) {
+    return this.usersService.findOne(req.user.email)
+  }
+
   @Get()
   @ApiBearerAuth()
   @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Sale)
@@ -35,12 +42,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Get('user-info')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  protected(@Req() req: RequestWithUser) {
-    return req.user
-  }
+  
 
 
 

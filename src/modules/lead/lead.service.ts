@@ -6,6 +6,7 @@ import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Transaction, TransactionDocument } from './schemas/transaction.schama';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
 
 @Injectable()
 export class LeadService {
@@ -30,6 +31,17 @@ export class LeadService {
     await lead.save()
 
     return transaction
+  }
+
+  async updateLeadBalance(dto: UpdateLeadBalance) {
+    const lead = await this.leadModel.findById(dto.lead)
+    if (!lead) throw new NotFoundException('Lead not found')
+    if (!(lead.balance instanceof Map)) {
+      lead.balance = new Map(Object.entries(lead.balance));
+    }
+    lead.balance.set(dto.currency, dto.amount);
+    await lead.save()
+    return lead
   }
 
   findAllTransactions({ lead, skip, limit }: { lead: string | Types.ObjectId, skip: number, limit: number }) {
