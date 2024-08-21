@@ -22,7 +22,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(swaggerPrefix, app, document);
+  SwaggerModule.setup(swaggerPrefix, app, document, { swaggerOptions: { persistAuthorization: true } });
   const port = 3000
   await app.listen(port);
   console.log(`Swagger server started at: http://localhost:${port}/${swaggerPrefix}`)
