@@ -8,8 +8,17 @@ export class Team {
   @Prop({ required: true })
   name: string;
 
+  @Prop({ required: true })
+  color: string
+
+  @Prop({ type: { type: Types.ObjectId, ref: 'User' } })
+  manager: Types.ObjectId
+
   @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
-  users: Types.ObjectId[];
+  teamLeads: Types.ObjectId[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
+  sales: Types.ObjectId[];
 }
 
 export const TeamSchema = SchemaFactory.createForClass(Team);

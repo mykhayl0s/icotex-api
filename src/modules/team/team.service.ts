@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { Team, TeamDocument } from './schemas/team.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class TeamService {
+  constructor(@InjectModel(Team.name) private readonly teamModel: Model<TeamDocument>,) { }
   create(createTeamDto: CreateTeamDto) {
-    return 'This action adds a new team';
+    return this.teamModel.create(createTeamDto)
   }
 
   findAll() {

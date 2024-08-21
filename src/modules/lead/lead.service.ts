@@ -6,7 +6,6 @@ import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Transaction, TransactionDocument } from './schemas/transaction.schama';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class LeadService {
