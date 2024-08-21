@@ -16,4 +16,8 @@ export class UserService {
     const newUser = new this.userModel(dto);
     return newUser.save();
   }
+
+  async findAll({ skip = 0, limit = 10 }: { skip?: number, limit?: number }) {
+    return await this.userModel.find({}).skip(skip).limit(limit)
+  }
 }

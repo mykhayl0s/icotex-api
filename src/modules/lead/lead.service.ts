@@ -32,8 +32,9 @@ export class LeadService {
     return transaction
   }
 
-  findAllTransactions(lead: string) {
-    return this.transactionModel.find({ lead: new Types.ObjectId(lead) })
+  findAllTransactions({ lead, skip, limit }: { lead: string | Types.ObjectId, skip: number, limit: number }) {
+    let query = { ...(lead ? new Types.ObjectId(lead) : {}) }
+    return this.transactionModel.find({ ...query }).skip(skip).limit(limit)
   }
 
   findAll() {

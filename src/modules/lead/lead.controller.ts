@@ -1,14 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { AuthUserPayload, RequestWithUser, RolesGuard } from 'src/common/roles.guard';
 import { Roles } from 'src/common/roles.decorator';
 import { ERole } from 'src/common/roles.enum';
 import { AuthUser } from 'src/common/user.decorator';
+import { query } from 'express';
 
 @Controller('lead')
 @ApiTags('lead')
@@ -42,8 +43,11 @@ export class LeadController {
   @ApiBearerAuth()
   @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findAllTransactions(@Param('lead') lead: string) {
-    return this.leadService.findAllTransactions(lead);
+  @ApiQuery({ name: 'skip' })
+  @ApiQuery({ name: 'limit' })
+  @ApiQuery({ name: 'lead' })
+  findAllTransactions(@Query() { skip, limit, lead }: any) {
+    return this.leadService.findAllTransactions({ lead, skip: +skip, limit: +limit });
   }
 
   @Get()

@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { RequestWithUser, RolesGuard } from 'src/common/roles.guard';
 import { Roles } from 'src/common/roles.decorator';
@@ -17,14 +17,19 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.usersService.findAll();
-  // }
+  @Get()
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Sale)
+  @UseGuards(JwtAuthGuard)
+  @ApiQuery({ name: 'skip' })
+  @ApiQuery({ name: 'limit' })
+  findAll(@Query() { skip = 0, limit = 10 }: any) {
+    return this.usersService.findAll({ skip: +skip, limit: +limit });
+  }
 
   @Get(':id')
   @ApiBearerAuth()
-  @Roles(ERole.Admin)
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Sale)
   @UseGuards(JwtAuthGuard, RolesGuard)
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
@@ -34,8 +39,10 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   protected(@Req() req: RequestWithUser) {
-   return req.user
+    return req.user
   }
+
+
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
