@@ -44,17 +44,26 @@ export class LeadController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   findOne(@Param('id') id: string) {
-    return this.leadService.findOne(+id);
+    return this.leadService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
-    return this.leadService.update(+id, updateLeadDto);
+    return this.leadService.update(id, updateLeadDto);
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   remove(@Param('id') id: string) {
-    return this.leadService.remove(+id);
+    return this.leadService.remove(id);
   }
 }
