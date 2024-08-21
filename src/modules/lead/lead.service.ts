@@ -5,7 +5,7 @@ import { Lead, LeadDocument } from './schemas/lead.schema';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Transaction, TransactionDocument } from './schemas/transaction.schama';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { CreateTransactionDto, UpdateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
 
 @Injectable()
@@ -28,6 +28,35 @@ export class LeadService {
     const currentAmount = lead.balance.get(transaction.currency) || 0;
     lead.balance.set(transaction.currency, currentAmount + transaction.amount);
     lead.transactions.push(new Types.ObjectId(transaction._id))
+    await lead.save()
+
+    return transaction
+  }
+
+  async updateTransaction(dto: UpdateTransactionDto) {
+    const transaction = await this.transactionModel.findById(dto.transaction)
+    const lead = await this.leadModel.findById(transaction.lead)
+    if (!(lead.balance instanceof Map)) {
+      lead.balance = new Map(Object.entries(lead.balance));
+    }
+    const currentAmount = lead.balance.get(transaction.currency)
+    lead.balance.set(transaction.currency, currentAmount - transaction.amount);
+    const newCurrentAmount = lead.balance.get(dto.currency) || 0
+    lead.balance.set(transaction.currency, newCurrentAmount + dto.amount);
+    transaction.amount = dto.amount
+    await lead.save()
+
+    return transaction
+  }
+
+  async deleteTransaction(id: string) {
+    const transaction = await this.transactionModel.findById(id)
+    const lead = await this.leadModel.findById(transaction.lead)
+    if (!(lead.balance instanceof Map)) {
+      lead.balance = new Map(Object.entries(lead.balance));
+    }
+    const currentAmount = lead.balance.get(transaction.currency)
+    lead.balance.set(transaction.currency, currentAmount - transaction.amount);
     await lead.save()
 
     return transaction

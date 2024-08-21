@@ -3,7 +3,7 @@ import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { CreateTransactionDto, UpdateTransactionDto } from './dto/create-transaction.dto';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { AuthUserPayload, RequestWithUser, RolesGuard } from 'src/common/roles.guard';
 import { Roles } from 'src/common/roles.decorator';
@@ -37,6 +37,22 @@ export class LeadController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   createTransaction(@Body() createTransactionDto: CreateTransactionDto, @AuthUser() user: AuthUserPayload) {
     return this.leadService.createTransaction({ ...createTransactionDto, user: user._id })
+  }
+
+  @Patch('transaction')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  updateTransaction(@Body() createTransactionDto: UpdateTransactionDto, @AuthUser() user: AuthUserPayload) {
+    return this.leadService.updateTransaction({ ...createTransactionDto, user: user._id })
+  }
+
+  @Delete('transaction/:id')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  deleteTransaction(@Param('id') id: string ) {
+    return this.leadService.deleteTransaction(id)
   }
 
   @Get('transactions')
