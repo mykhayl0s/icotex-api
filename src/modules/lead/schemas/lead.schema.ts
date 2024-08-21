@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type LeadDocument = Lead & Document;
 
-@Schema()
+@Schema({ versionKey: false, timestamps: true })
 export class Lead {
   @Prop({ required: true })
   fullname: string;
@@ -17,8 +17,10 @@ export class Lead {
   @Prop({ required: true })
   country: string;
 
-  @Prop({ required: true, default: 0 })
-  balance: number;
+  @Prop({
+    required: true,
+  })
+  balance: Map<string, number>
 
   @Prop({ required: true, default: 0 })
   deposited: number;
@@ -34,6 +36,9 @@ export class Lead {
 
   @Prop({ default: 0 })
   messagesCount: number;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Transaction' }] })
+  transactions: Types.ObjectId[];
 }
 
 export const LeadSchema = SchemaFactory.createForClass(Lead);

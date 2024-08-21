@@ -3,14 +3,15 @@ import { ERole } from './roles.enum';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.decorator';
 
+export interface AuthUserPayload {
+    _id: string;
+    name: string;
+    email: string
+    role: ERole;
+}
 
 export interface RequestWithUser extends Request {
-    user: {
-        _id: string;
-        name: string;
-        email: string
-        role: ERole;
-    };
+    user: AuthUserPayload
 }
 
 @Injectable()
