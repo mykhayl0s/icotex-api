@@ -12,13 +12,11 @@ async function bootstrap() {
 
   const swaggerPrefix = 'api'
 
-  // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
     .setDescription('The API description')
     .addBearerAuth()
     .setVersion('1.0')
-    .addTag('cats')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
