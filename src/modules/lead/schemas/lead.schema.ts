@@ -41,7 +41,7 @@ export class Lead {
   @Prop({ default: 0 })
   messagesCount: number;
 
-  @Prop({ required: true })
+  @Prop({ required: true, default: 'usd' })
   currency: string;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Transaction' }] })

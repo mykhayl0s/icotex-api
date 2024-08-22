@@ -6,7 +6,12 @@ export class CreateTeamDto {
     name: string
 
     @ApiProperty()
+    @IsOptional()
     color: string
+
+    @ApiProperty()
+    @IsOptional()
+    description: string
 
     @ApiPropertyOptional({ type: String })
     @IsMongoId()

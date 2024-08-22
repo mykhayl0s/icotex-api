@@ -11,6 +11,9 @@ export class Team {
   @Prop({ required: true })
   color: string
 
+  @Prop({ required: true, default: '' })
+  description: string
+
   @Prop({ type: { type: Types.ObjectId, ref: 'User' } })
   manager: Types.ObjectId
 

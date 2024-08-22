@@ -7,12 +7,17 @@ import { LeadModule } from './modules/lead/lead.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { CurrencyModule } from './modules/currency/currency.module';
 
-
 @Module({
-  imports: [UserModule, AuthModule, MongooseModule.forRoot('mongodb://localhost/icotext'), TeamModule, LeadModule, ChatModule, CurrencyModule],
-  controllers: [],
-  providers: [
-
+  imports: [
+    UserModule,
+    AuthModule,
+    MongooseModule.forRoot('mongodb://localhost/icotext'),
+    TeamModule,
+    LeadModule,
+    ChatModule,
+    CurrencyModule,
   ],
+  controllers: [],
+  providers: [],
 })
-export class AppModule { }
+export class AppModule {}

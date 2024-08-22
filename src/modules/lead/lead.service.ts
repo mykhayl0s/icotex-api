@@ -47,16 +47,19 @@ export class LeadService {
     lead,
     skip,
     limit,
+    sortByDate,
   }: {
     lead: string | Types.ObjectId;
     skip: number;
     limit: number;
+    sortByDate: 'asc' | 'desc';
   }) {
     let query = { ...(lead ? new Types.ObjectId(lead) : {}) };
     return this.transactionModel
       .find({ ...query })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .sort({ createdAt: sortByDate });
   }
 
   findAll() {
@@ -98,7 +101,7 @@ export class LeadService {
         usdValue,
       };
       populatedBalance.totalUsdValue += usdValue;
-      populatedBalance.totalChosenValue += chosenValue
+      populatedBalance.totalChosenValue += chosenValue;
     }
     lead.balance = populatedBalance as any;
 

@@ -104,11 +104,13 @@ export class LeadController {
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'lead', required: false })
-  findAllTransactions(@Query() { skip, limit, lead }: any) {
+  @ApiQuery({ name: 'sortByDate', required: false })
+  findAllTransactions(@Query() { skip, limit, lead, sortByDate }: any) {
     return this.leadService.findAllTransactions({
       lead,
       skip: +skip,
       limit: +limit,
+      sortByDate,
     });
   }
 
