@@ -5,10 +5,11 @@ import { AuthModule } from './modules/auth/auth.module';
 import { TeamModule } from './modules/team/team.module';
 import { LeadModule } from './modules/lead/lead.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { CurrencyModule } from './modules/currency/currency.module';
 
 
 @Module({
-  imports: [UserModule, AuthModule, MongooseModule.forRoot('mongodb://localhost/icotext'), TeamModule, LeadModule, ChatModule],
+  imports: [UserModule, AuthModule, MongooseModule.forRoot('mongodb://localhost/icotext'), TeamModule, LeadModule, ChatModule, CurrencyModule],
   controllers: [],
   providers: [
 
