@@ -7,7 +7,10 @@ export type LeadDocument = Lead & Document;
 @Schema({ versionKey: false, timestamps: true })
 export class Lead {
   @Prop({ required: true })
-  fullname: string;
+  firstName: string;
+
+  @Prop({ required: true })
+  lastName: string;
 
   @Prop({ required: true, unique: true })
   email: string;

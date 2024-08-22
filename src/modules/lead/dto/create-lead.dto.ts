@@ -18,7 +18,17 @@ export class CreateLeadDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  fullname: string;
+  firstName: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 
   @ApiProperty()
   @IsEmail()

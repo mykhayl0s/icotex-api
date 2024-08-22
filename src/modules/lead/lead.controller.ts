@@ -26,18 +26,21 @@ import {
 import { Roles } from 'src/common/roles.decorator';
 import { ERole } from 'src/common/roles.enum';
 import { AuthUser } from 'src/common/user.decorator';
-import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
+import { UserService } from '../user/users.service';
 
 @Controller('lead')
 @ApiTags('lead')
 export class LeadController {
-  constructor(private readonly leadService: LeadService) {}
+  constructor(
+    private readonly leadService: LeadService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post()
   @ApiBearerAuth()
   @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  create(@Body() createLeadDto: CreateLeadDto) {
+  async create(@Body() createLeadDto: CreateLeadDto) {
     const balance = {
       btc: 0,
       eth: 0,
@@ -45,6 +48,14 @@ export class LeadController {
       eur: 0,
       gbp: 0,
     };
+
+    await this.userService.create({
+      email: createLeadDto.email,
+      password: createLeadDto.password,
+      name: `${createLeadDto.firstName} ${createLeadDto.lastName}`,
+      role: ERole.User,
+    });
+
     return this.leadService.create({ ...createLeadDto, balance });
   }
 
@@ -62,21 +73,27 @@ export class LeadController {
     });
   }
 
-  // @Patch('transaction')
-  // @ApiBearerAuth()
-  // @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // updateTransaction(@Body() createTransactionDto: UpdateTransactionDto, @AuthUser() user: AuthUserPayload) {
-  //   return this.leadService.updateTransaction({ ...createTransactionDto, user: user._id })
-  // }
-  //
-  // @Delete('transaction/:id')
-  // @ApiBearerAuth()
-  // @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // deleteTransaction(@Param('id') id: string ) {
-  //   return this.leadService.deleteTransaction(id)
-  // }
+  @Patch('transaction')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  updateTransaction(
+    @Body() createTransactionDto: UpdateTransactionDto,
+    @AuthUser() user: AuthUserPayload,
+  ) {
+    return this.leadService.updateTransaction({
+      ...createTransactionDto,
+      user: user._id,
+    });
+  }
+
+  @Delete('transaction/:id')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  deleteTransaction(@Param('id') id: string) {
+    return this.leadService.deleteTransaction(id);
+  }
 
   @Get('transactions')
   @ApiBearerAuth()
