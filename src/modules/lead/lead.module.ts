@@ -3,13 +3,16 @@ import { LeadService } from './lead.service';
 import { LeadController } from './lead.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Lead, LeadSchema } from './schemas/lead.schema';
-import { Transaction, TransactionSchema } from './schemas/transaction.schama';
+import { Transaction, TransactionSchema } from './schemas/transaction.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Lead.name, schema: LeadSchema }]),
-    MongooseModule.forFeature([{ name: Transaction.name, schema: TransactionSchema }])],
+    MongooseModule.forFeature([
+      { name: Transaction.name, schema: TransactionSchema },
+    ]),
+  ],
   controllers: [LeadController],
-  providers: [LeadService]
+  providers: [LeadService],
 })
-export class LeadModule { }
+export class LeadModule {}
