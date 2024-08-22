@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
-import { IsMongoId } from "class-validator"
+import { IsMongoId, IsOptional } from "class-validator"
 
 export class CreateTeamDto {
     @ApiProperty()
@@ -10,6 +10,7 @@ export class CreateTeamDto {
 
     @ApiPropertyOptional({ type: String })
     @IsMongoId()
+    @IsOptional()
     manager: string
 
     @ApiProperty({ type: [String] })

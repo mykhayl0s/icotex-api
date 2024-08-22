@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { Team, TeamDocument } from './schemas/team.schema';
@@ -16,15 +16,20 @@ export class TeamService {
     return `This action returns all team`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} team`;
+  findOne(id: string) {
+    this.teamModel.findById(id)
   }
 
-  update(id: number, updateTeamDto: UpdateTeamDto) {
-    return `This action updates a #${id} team`;
+  async update(updateTeamDto: UpdateTeamDto) {
+    const team = await this.teamModel.findById(updateTeamDto.id)
+    if (!team) throw new NotFoundException()
+    Object.assign(team, updateTeamDto)
+    return await team.save()
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} team`;
+  async remove(id: string) {
+    const team = await this.teamModel.findById(id)
+    if (!team) throw new NotFoundException()
+    return this.teamModel.findByIdAndDelete(id)
   }
 }
