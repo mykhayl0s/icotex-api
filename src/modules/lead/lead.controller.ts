@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
@@ -27,6 +28,7 @@ import { Roles } from 'src/common/roles.decorator';
 import { ERole } from 'src/common/roles.enum';
 import { AuthUser } from 'src/common/user.decorator';
 import { UserService } from '../user/users.service';
+import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
 
 @Controller('lead')
 @ApiTags('lead')
@@ -110,13 +112,13 @@ export class LeadController {
     });
   }
 
-  // @Patch('balance')
-  // @ApiBearerAuth()
-  // @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // updateLeadBalance(@Body() dto: UpdateLeadBalance) {
-  //   return this.leadService.updateLeadBalance(dto)
-  // }
+  @Patch('balance')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  updateLeadBalance(@Body() dto: UpdateLeadBalance) {
+    return this.leadService.updateLeadBalance(dto);
+  }
 
   @Get()
   findAll() {

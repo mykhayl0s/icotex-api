@@ -10,6 +10,7 @@ import {
   UpdateTransactionDto,
 } from './dto/create-transaction.dto';
 import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
+import { CurrencyService } from '../currency/currency.service';
 
 @Injectable()
 export class LeadService {
@@ -17,6 +18,7 @@ export class LeadService {
     @InjectModel(Lead.name) private readonly leadModel: Model<LeadDocument>,
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<TransactionDocument>,
+    private readonly currencyService: CurrencyService,
   ) {}
 
   async create(createLeadDto: CreateLeadDto) {
@@ -63,10 +65,40 @@ export class LeadService {
       .populate({ path: 'transactions', model: 'Transaction' });
   }
 
-  findOne(id: string) {
-    return this.leadModel
+  async findOne(id: string) {
+    const lead = await this.leadModel
       .findById(id)
       .populate({ path: 'transactions', model: 'Transaction' });
+
+    const currencies = await this.currencyService.getCurrenciesMap();
+    const populatedBalance = {};
+    let totalBalanceUsd = 0;
+    const chosenCurrency = currencies.get(lead.currency) || 1;
+    for (const [key, value] of lead.balance) {
+      let chosenValue = 0;
+      if (lead.currency === key) {
+        chosenValue = parseFloat(
+          Number(value * (currencies.get(key) || 1)).toFixed(2),
+        );
+      } else {
+        chosenValue = parseFloat(
+          Number(value * ((currencies.get(key) || 1) / chosenCurrency)).toFixed(2),
+        );
+      }
+
+      const usdValue = parseFloat(
+        Number(value * (currencies.get(key) || 1)).toFixed(2),
+      );
+      populatedBalance[key] = {
+        value,
+        chosenValue,
+        usdValue,
+      };
+      totalBalanceUsd += usdValue;
+    }
+    lead.balance = populatedBalance as any;
+    lead['totalBalanceUsd'] = totalBalanceUsd;
+    return lead;
   }
 
   finByUser(id: string) {

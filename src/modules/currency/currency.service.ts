@@ -22,14 +22,23 @@ export class CurrencyService {
   }
 
   findAll() {
-    return this.currencyModel.find()
+    return this.currencyModel.find();
+  }
+
+  async getCurrenciesMap() {
+    const currencies = await this.currencyModel.find();
+    const map = new Map<string, number>();
+    for (const currency of currencies) {
+      map.set(currency.code, currency.exchangeRate);
+    }
+    return map;
   }
 
   findOne(_id: string) {
-    return this.currencyModel.find({ _id })
+    return this.currencyModel.find({ _id });
   }
 
   remove(_id: string) {
-    return this.currencyModel.find({ _id })
+    return this.currencyModel.find({ _id });
   }
 }
