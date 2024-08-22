@@ -71,18 +71,21 @@ export class LeadService {
       .populate({ path: 'transactions', model: 'Transaction' });
 
     const currencies = await this.currencyService.getCurrenciesMap();
-    const populatedBalance = {};
+    const populatedBalance = {
+      totalUsdValue: 0,
+      totalChosenValue: 0,
+    };
     let totalBalanceUsd = 0;
     const chosenCurrency = currencies.get(lead.currency) || 1;
     for (const [key, value] of lead.balance) {
       let chosenValue = 0;
       if (lead.currency === key) {
-        chosenValue = parseFloat(
-          Number(value * (currencies.get(key) || 1)).toFixed(2),
-        );
+        chosenValue = value;
       } else {
         chosenValue = parseFloat(
-          Number(value * ((currencies.get(key) || 1) / chosenCurrency)).toFixed(2),
+          Number(value * ((currencies.get(key) || 1) / chosenCurrency)).toFixed(
+            2,
+          ),
         );
       }
 
@@ -94,10 +97,11 @@ export class LeadService {
         chosenValue,
         usdValue,
       };
-      totalBalanceUsd += usdValue;
+      populatedBalance.totalUsdValue += usdValue;
+      populatedBalance.totalChosenValue += chosenValue
     }
     lead.balance = populatedBalance as any;
-    lead['totalBalanceUsd'] = totalBalanceUsd;
+
     return lead;
   }
 
