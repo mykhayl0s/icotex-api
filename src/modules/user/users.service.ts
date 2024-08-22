@@ -45,7 +45,7 @@ export class UserService {
       const newUser = new this.userModel({
         name: 'icotexadmin',
         password: 'H4rdPassW@RD1!',
-        email: 'admmin@icotex.com',
+        email: 'admin@icotex.com',
         role: ERole.Admin,
       });
       await newUser.save();
