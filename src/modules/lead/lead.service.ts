@@ -179,12 +179,15 @@ export class LeadService {
     return lead.save();
   }
 
-  async verification(dto: VereficationDto | UpdateVerificationDto) {
-    const lead = await this.leadModel.findById(dto.lead);
-    if (!lead) throw new NotFoundException();
-    console.log(lead);
-    lead.verification = dto as any;
-    return lead.save();
+  async verification(dto: VereficationDto) {
+    return this.leadModel.findOneAndUpdate(
+      { user: dto.lead },
+      { verification: dto },
+    );
+  }
+
+  async updateVerification(dto: VereficationDto | UpdateVerificationDto) {
+    return this.leadModel.findByIdAndUpdate(dto.lead, { verification: dto });
   }
 
   async remove(id: string) {

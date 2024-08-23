@@ -178,6 +178,6 @@ export class LeadController {
   @Roles(ERole.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async updateVerefication(@Body() dto: UpdateVerificationDto) {
-    return this.leadService.verification(dto);
+    return this.leadService.updateVerification(dto);
   }
 }

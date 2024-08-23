@@ -49,5 +49,6 @@ export class UpdateVerificationDto extends PartialType(VereficationDto) {
   lead: string;
 
   @ApiProperty()
-  verifiedAt: Date;
+  @IsString()
+  status: string;
 }
