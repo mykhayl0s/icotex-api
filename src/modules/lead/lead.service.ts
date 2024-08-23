@@ -11,6 +11,7 @@ import {
 } from './dto/create-transaction.dto';
 import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
 import { CurrencyService } from '../currency/currency.service';
+import { User, UserDocument } from '../user/schemas/user.schema';
 
 @Injectable()
 export class LeadService {
@@ -18,6 +19,8 @@ export class LeadService {
     @InjectModel(Lead.name) private readonly leadModel: Model<LeadDocument>,
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<TransactionDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     private readonly currencyService: CurrencyService,
   ) {}
 
@@ -43,7 +46,7 @@ export class LeadService {
     return transaction;
   }
 
-  findAllTransactions({
+  async findAllTransactions({
     lead,
     skip,
     limit,
@@ -54,18 +57,30 @@ export class LeadService {
     limit: number;
     sortByDate: 'asc' | 'desc';
   }) {
-    let query = { ...(lead ? new Types.ObjectId(lead) : {}) };
-    return this.transactionModel
+    const query = { ...(lead ? new Types.ObjectId(lead) : {}) };
+    const transactions = await this.transactionModel
       .find({ ...query })
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: sortByDate });
+    const count = await this.transactionModel.countDocuments({});
+    return {
+      data: transactions,
+      count,
+    };
   }
 
-  findAll() {
-    return this.leadModel
+  async findAll({ skip, limit }: { skip: any; limit: any }) {
+    const leads = await this.leadModel
       .find()
+      .skip(skip)
+      .limit(limit)
       .populate({ path: 'transactions', model: 'Transaction' });
+    const count = await this.leadModel.countDocuments({});
+    return {
+      data: leads,
+      count,
+    };
   }
 
   async findOne(id: string) {
@@ -78,7 +93,6 @@ export class LeadService {
       totalUsdValue: 0,
       totalChosenValue: 0,
     };
-    let totalBalanceUsd = 0;
     const chosenCurrency = currencies.get(lead.currency) || 1;
     for (const [key, value] of lead.balance) {
       let chosenValue = 0;
@@ -122,7 +136,10 @@ export class LeadService {
 
   async remove(id: string) {
     const lead = await this.leadModel.findById(id);
-    if (lead) return this.leadModel.deleteOne(lead._id);
+    if (lead) {
+      await this.userModel.findOneAndDelete({ email: lead.email });
+      return this.leadModel.deleteOne(lead._id);
+    }
     throw new NotFoundException('Lead not found');
   }
 
@@ -151,6 +168,10 @@ export class LeadService {
     const currentAmount = lead.balance.get(transaction.currency);
     lead.balance.set(transaction.currency, currentAmount - transaction.amount);
     await lead.save();
+    await this.transactionModel.findByIdAndDelete(id);
+    await this.leadModel.findByIdAndUpdate(transaction.lead, {
+      $pull: { transactions: new Types.ObjectId(id) },
+    });
 
     return transaction;
   }

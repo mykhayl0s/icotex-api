@@ -11,7 +11,9 @@ import { CurrencyModule } from './modules/currency/currency.module';
   imports: [
     UserModule,
     AuthModule,
-    MongooseModule.forRoot('mongodb://localhost/icotext'),
+    MongooseModule.forRoot(
+      'mongodb+srv://kapustinpavlo:vH0bqJCs1cdB52eR@cluster0.1jllz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+    ),
     TeamModule,
     LeadModule,
     ChatModule,

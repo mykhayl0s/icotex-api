@@ -49,6 +49,7 @@ export class CreateLeadDto {
   @ValidateNested()
   @Type(() => Balance)
   @IsNotEmpty()
+  @IsOptional()
   balance: Balance;
 
   @ApiProperty()
@@ -75,8 +76,4 @@ export class CreateLeadDto {
   @IsNumber()
   @IsOptional()
   messagesCount: number;
-
-  @ApiProperty()
-  @IsString()
-  user: number;
 }

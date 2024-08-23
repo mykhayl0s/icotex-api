@@ -21,6 +21,15 @@ export class Transaction extends Document {
 
   @Prop({ default: '' })
   description: string;
+
+  @Prop({ default: new Date() })
+  date: string;
+
+  @Prop({ default: 'Completed' })
+  status: string;
+
+  @Prop({ default: 'Deposit' })
+  type: string;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);

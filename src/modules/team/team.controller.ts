@@ -1,16 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { TeamService } from './team.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { Roles } from 'src/common/roles.decorator';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ERole } from 'src/common/roles.enum';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 
 @Controller('team')
 @ApiTags('team')
 export class TeamController {
-  constructor(private readonly teamService: TeamService) { }
+  constructor(private readonly teamService: TeamService) {}
 
   @Post()
   @ApiBearerAuth()
@@ -24,8 +34,10 @@ export class TeamController {
   @ApiBearerAuth()
   @Roles(ERole.Admin)
   @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.teamService.findAll();
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  findAll(@Query() { skip = 0, limit = 10 }: any) {
+    return this.teamService.findAll({ skip: +skip, limit: +limit });
   }
 
   @Get(':id')
@@ -36,12 +48,12 @@ export class TeamController {
     return this.teamService.findOne(id);
   }
 
-  @Patch()
+  @Patch(':id')
   @ApiBearerAuth()
   @Roles(ERole.Admin)
   @UseGuards(JwtAuthGuard)
-  update(@Body() updateTeamDto: UpdateTeamDto) {
-    return this.teamService.update(updateTeamDto);
+  update(@Param('id') id: string, @Body() updateTeamDto: UpdateTeamDto) {
+    return this.teamService.update(id, updateTeamDto);
   }
 
   @Delete(':id')

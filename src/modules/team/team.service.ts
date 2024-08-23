@@ -7,29 +7,39 @@ import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class TeamService {
-  constructor(@InjectModel(Team.name) private readonly teamModel: Model<TeamDocument>,) { }
+  constructor(
+    @InjectModel(Team.name) private readonly teamModel: Model<TeamDocument>,
+  ) {}
   create(createTeamDto: CreateTeamDto) {
-    return this.teamModel.create(createTeamDto)
+    return this.teamModel.create(createTeamDto);
   }
 
-  findAll() {
-    return `This action returns all team`;
+  async findAll({ skip = 0, limit = 10 }: { skip?: number; limit?: number }) {
+    const teams = await this.teamModel
+      .find({})
+      .skip(skip)
+      .limit(limit)
+      .populate({ path: 'teamLeads', model: 'User' })
+      .populate({ path: 'sales', model: 'User' })
+      .populate({ path: 'manager', model: 'User' });
+    const count = await this.teamModel.find({}).countDocuments({});
+    return {
+      data: teams,
+      count,
+    };
   }
 
   findOne(id: string) {
-    this.teamModel.findById(id)
+    this.teamModel.findById(id);
   }
 
-  async update(updateTeamDto: UpdateTeamDto) {
-    const team = await this.teamModel.findById(updateTeamDto.id)
-    if (!team) throw new NotFoundException()
-    Object.assign(team, updateTeamDto)
-    return await team.save()
+  async update(id: string, updateTeamDto: UpdateTeamDto) {
+    return this.teamModel.findByIdAndUpdate(id, updateTeamDto);
   }
 
   async remove(id: string) {
-    const team = await this.teamModel.findById(id)
-    if (!team) throw new NotFoundException()
-    return this.teamModel.findByIdAndDelete(id)
+    const team = await this.teamModel.findById(id);
+    if (!team) throw new NotFoundException();
+    return this.teamModel.findByIdAndDelete(id);
   }
 }

@@ -56,6 +56,7 @@ export class LeadController {
       password: createLeadDto.password,
       name: `${createLeadDto.firstName} ${createLeadDto.lastName}`,
       role: ERole.User,
+      username: createLeadDto.email,
     });
 
     return this.leadService.create({ ...createLeadDto, balance });
@@ -123,8 +124,10 @@ export class LeadController {
   }
 
   @Get()
-  findAll() {
-    return this.leadService.findAll();
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  findAll(@Query() { limit, skip }: any) {
+    return this.leadService.findAll({ limit, skip });
   }
 
   @Get(':id')
@@ -154,7 +157,7 @@ export class LeadController {
   @ApiBearerAuth()
   @Roles(ERole.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.leadService.remove(id);
   }
 }

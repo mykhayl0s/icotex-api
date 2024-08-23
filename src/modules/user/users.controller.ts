@@ -61,8 +61,8 @@ export class UsersController {
   @ApiBearerAuth()
   @Roles(ERole.Admin, ERole.Manager)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')

@@ -3,7 +3,6 @@ import { CreateTeamDto } from './create-team.dto';
 import { IsMongoId } from 'class-validator';
 
 export class UpdateTeamDto extends PartialType(CreateTeamDto) {
-    @ApiProperty()
-    @IsMongoId()
-    id: string
+  @ApiProperty()
+  id: string;
 }

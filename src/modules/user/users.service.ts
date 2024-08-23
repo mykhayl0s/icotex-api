@@ -23,14 +23,16 @@ export class UserService {
   }
 
   async findAll({ skip = 0, limit = 10 }: { skip?: number; limit?: number }) {
-    return await this.userModel.find({}).skip(skip).limit(limit);
+    const users = await this.userModel.find({}).skip(skip).limit(limit);
+    const count = await this.userModel.find({}).countDocuments({});
+    return {
+      data: users,
+      count,
+    };
   }
 
-  async update(dto: UpdateUserDto) {
-    const user = await this.userModel.findOne({ _id: dto.id });
-    if (!user) throw new NotFoundException('User not found');
-    Object.assign(user, dto);
-    return user.save();
+  async update(id: string, dto: UpdateUserDto) {
+    return this.userModel.findByIdAndUpdate(id, dto);
   }
 
   async delete(_id: string) {
