@@ -9,9 +9,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
-import { AuthService } from '../auth/auth.service';
 import * as jwt from 'jsonwebtoken';
 import { AuthUserPayload } from 'src/common/roles.guard';
+import { UserService } from '../user/users.service';
+import { v4 as uuid } from 'uuid';
 
 @WebSocketGateway()
 export class ChatGateway
@@ -23,7 +24,8 @@ export class ChatGateway
 
   constructor(
     private readonly chatService: ChatService,
-    private readonly authService: AuthService,
+    // private readonly authService: AuthService,
+    private readonly userService: UserService,
   ) {}
 
   afterInit(server: Server) {
@@ -33,8 +35,13 @@ export class ChatGateway
   async handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
     try {
-      const user = this.getTokenFromHeaders(client);
-      this.clientUserMap.set(client.id, user._id);
+      const authUser = this.getTokenFromHeaders(client);
+      this.clientUserMap.set(client.id, authUser._id);
+      const user = await this.userService.findById(authUser._id);
+
+      if (!user.room) {
+        this.userService.updateRoom(authUser._id, uuid());
+      }
     } catch (error) {
       console.error('Connection error:', error.message);
       client.disconnect();
@@ -49,23 +56,17 @@ export class ChatGateway
   @SubscribeMessage('sendMessage')
   async handleMessage(
     client: Socket,
-    payload: { userTo: string; message: string },
+    { room, message }: { room: string; message: string },
   ) {
     const user = this.clientUserMap.get(client.id);
 
-    const message = await this.chatService.createMessage(
-      [user, payload.userTo],
-      payload.message,
-    );
+    await this.chatService.createMessage({
+      room,
+      content: message,
+      user,
+    });
 
-    const recipientClientId = Array.from(this.clientUserMap.entries()).find(
-      ([clientId, userId]) => userId === payload.userTo,
-    )?.[0];
-
-    if (recipientClientId) {
-      this.server.to(recipientClientId).emit('receiveMessage', message);
-    }
-    // this.server.to(payload.room).emit('receiveMessage', message);
+    this.server.to(room).emit('receiveMessage', message);
   }
 
   @SubscribeMessage('joinRoom')

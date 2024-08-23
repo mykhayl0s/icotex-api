@@ -9,12 +9,10 @@ export class ChatService {
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
   ) {}
 
-  async createMessage(
-    participants: string[],
-    content: string,
-  ): Promise<Message> {
+  async createMessage({ room, content, user }): Promise<Message> {
     const createdMessage = new this.messageModel({
-      participants: participants.map((el) => new Types.ObjectId(el)),
+      room,
+      user,
       content,
     });
     return createdMessage.save();

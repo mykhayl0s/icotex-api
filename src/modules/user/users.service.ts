@@ -17,6 +17,10 @@ export class UserService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  async findById(id: string): Promise<User | null> {
+    return this.userModel.findById(id).exec();
+  }
+
   async create(dto: CreateUserDto): Promise<User> {
     const newUser = new this.userModel(dto);
     return newUser.save();
@@ -33,6 +37,10 @@ export class UserService {
 
   async update(id: string, dto: UpdateUserDto) {
     return this.userModel.findByIdAndUpdate(id, dto);
+  }
+
+  async updateRoom(id: string, room: string) {
+    return this.userModel.findByIdAndUpdate(id, { room });
   }
 
   async delete(_id: string) {
