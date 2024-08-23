@@ -9,13 +9,13 @@ export class Team {
   name: string;
 
   @Prop({ required: true })
-  color: string
+  color: string;
 
   @Prop({ required: true, default: '' })
-  description: string
+  description: string;
 
-  @Prop({ type: { type: Types.ObjectId, ref: 'User' } })
-  manager: Types.ObjectId
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  manager: Types.ObjectId;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
   teamLeads: Types.ObjectId[];
