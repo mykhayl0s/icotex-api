@@ -60,9 +60,10 @@ export class AuthService {
   async refreshAccessToken(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken);
-
+      console.log(payload);
       const user = await this.userService.findById(payload._id);
-      if (!user || user.refreshToken !== refreshToken) {
+
+      if (!user) {
         throw new BadRequestException('Invalid refresh token');
       }
 
