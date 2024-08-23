@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Query,
-  NotFoundException,
 } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';

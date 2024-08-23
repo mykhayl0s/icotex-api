@@ -29,17 +29,14 @@ export class Lead {
   @Prop({ required: true, default: 0 })
   deposited: number;
 
-  @Prop({ required: true, default: 0 })
-  sale: number;
+  @Prop({ type: { type: Types.ObjectId, ref: User.name } })
+  sale: Types.ObjectId;
 
   @Prop({ required: true, default: 'new' })
   status: string;
 
   @Prop({ default: '' })
   comment: string;
-
-  @Prop({ default: 0 })
-  messagesCount: number;
 
   @Prop({ required: true, default: 'usd' })
   currency: string;
@@ -62,6 +59,7 @@ export class Lead {
       zipCode: String,
       image: String,
       verifiedAt: Date,
+      type: String,
     },
     default: {},
   })
@@ -75,6 +73,7 @@ export class Lead {
     city: string;
     zipCode: string;
     image: string;
+    type: string;
     verifiedAt?: Date;
   };
 }

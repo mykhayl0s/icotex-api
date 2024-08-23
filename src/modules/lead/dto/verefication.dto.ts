@@ -38,6 +38,10 @@ export class VereficationDto {
   @ApiProperty()
   @IsString()
   image: string;
+
+  @ApiProperty()
+  @IsString()
+  type: string;
 }
 
 export class UpdateVerificationDto extends PartialType(VereficationDto) {

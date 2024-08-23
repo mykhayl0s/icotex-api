@@ -59,9 +59,9 @@ export class CreateLeadDto {
   deposited: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  sale: number;
+  sale: string;
 
   @ApiProperty()
   @IsString()
@@ -77,9 +77,4 @@ export class CreateLeadDto {
   @IsString()
   @IsOptional()
   currency: string;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  messagesCount: number;
 }

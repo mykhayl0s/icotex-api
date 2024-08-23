@@ -45,8 +45,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
-  findAll(@Query() { skip = 0, limit = 10 }: any) {
-    return this.usersService.findAll({ skip: +skip, limit: +limit });
+  @ApiQuery({ name: 'role', required: false })
+  findAll(@Query() { skip = 0, limit = 10, role }: any) {
+    return this.usersService.findAll({ skip: +skip, limit: +limit, role });
   }
 
   @Get(':id')
