@@ -42,6 +42,7 @@ export class AuthService {
     }
 
     delete user.password;
+    delete user.refreshToken;
 
     const access_token = this.generateToken(user, '1h');
     const refresh_token = this.generateToken(user, '7d');
@@ -66,7 +67,9 @@ export class AuthService {
       }
 
       const accessToken = this.generateToken(user, '1h');
-      return { access_token: accessToken };
+      const refresh_token = this.generateToken(user, '7d');
+
+      return { access_token: accessToken, refresh_token };
     } catch (e) {
       throw new BadRequestException('Invalid refresh token');
     }
