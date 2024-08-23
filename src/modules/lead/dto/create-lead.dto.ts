@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsNumber,
   ValidateNested,
+  IsMongoId,
 } from 'class-validator';
 
 export class Balance {
@@ -71,6 +72,11 @@ export class CreateLeadDto {
   @IsString()
   @IsOptional()
   comment: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  currency: string;
 
   @ApiProperty()
   @IsNumber()

@@ -25,7 +25,6 @@ export class LeadService {
   ) {}
 
   async create(createLeadDto: CreateLeadDto) {
-    console.log(createLeadDto);
     return this.leadModel.create(createLeadDto);
   }
 
@@ -122,10 +121,43 @@ export class LeadService {
     return lead;
   }
 
-  finByUser(id: string) {
-    return this.leadModel
-      .findOne({ user: new Types.ObjectId(id) })
+  async finByUser(id: string) {
+    const lead = await this.leadModel
+      .findOne({ user: id })
       .populate({ path: 'transactions', model: 'Transaction' });
+
+    const currencies = await this.currencyService.getCurrenciesMap();
+    const populatedBalance = {
+      totalUsdValue: 0,
+      totalChosenValue: 0,
+    };
+    const chosenCurrency = currencies.get(lead.currency) || 1;
+    for (const [key, value] of lead.balance) {
+      let chosenValue = 0;
+      if (lead.currency === key) {
+        chosenValue = value;
+      } else {
+        chosenValue = parseFloat(
+          Number(value * ((currencies.get(key) || 1) / chosenCurrency)).toFixed(
+            2,
+          ),
+        );
+      }
+
+      const usdValue = parseFloat(
+        Number(value * (currencies.get(key) || 1)).toFixed(2),
+      );
+      populatedBalance[key] = {
+        value,
+        chosenValue,
+        usdValue,
+      };
+      populatedBalance.totalUsdValue += usdValue;
+      populatedBalance.totalChosenValue += chosenValue;
+    }
+    lead.balance = populatedBalance as any;
+
+    return lead;
   }
 
   async update(id: string, updateLeadDto: UpdateLeadDto) {

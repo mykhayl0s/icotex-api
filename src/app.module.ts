@@ -6,9 +6,12 @@ import { TeamModule } from './modules/team/team.module';
 import { LeadModule } from './modules/lead/lead.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { CurrencyModule } from './modules/currency/currency.module';
+import { FileModule } from './modules/file/file.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     UserModule,
     AuthModule,
     MongooseModule.forRoot('mongodb://localhost/icotext'),
@@ -16,6 +19,7 @@ import { CurrencyModule } from './modules/currency/currency.module';
     LeadModule,
     ChatModule,
     CurrencyModule,
+    FileModule
   ],
   controllers: [],
   providers: [],
