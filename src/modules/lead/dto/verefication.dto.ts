@@ -41,7 +41,7 @@ export class VereficationDto {
 
   @ApiProperty()
   @IsString()
-  type: string;
+  verificationType: string;
 }
 
 export class UpdateVerificationDto extends PartialType(VereficationDto) {
@@ -87,5 +87,5 @@ export class UpdateVerificationDto extends PartialType(VereficationDto) {
 
   @ApiProperty()
   @IsString()
-  type: string;
+  verificationType: string;
 }

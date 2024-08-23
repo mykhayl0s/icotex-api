@@ -59,7 +59,7 @@ export class Lead {
       zipCode: String,
       image: String,
       verifiedAt: Date,
-      type: String,
+      verificationType: String,
     },
     default: {},
   })
@@ -73,7 +73,7 @@ export class Lead {
     city: string;
     zipCode: string;
     image: string;
-    type: string;
+    verificationType: string;
     verifiedAt?: Date;
   };
 }
