@@ -179,19 +179,16 @@ export class LeadService {
     return lead.save();
   }
 
-  async verification(dto: VereficationDto) {
+  async verification({ lead, ...dto }: VereficationDto) {
     return this.leadModel.findOneAndUpdate(
-      { user: dto.lead },
+      { user: lead },
       { verification: dto },
     );
   }
 
-  async updateVerification(dto: VereficationDto | UpdateVerificationDto) {
-    return this.leadModel.findByIdAndUpdate(dto.lead, {
-      verification: {
-        ...dto,
-        verifiedAt: new Date(),
-      },
+  async updateVerification({ lead, ...dto }: UpdateVerificationDto) {
+    return this.leadModel.findByIdAndUpdate(lead, {
+      verification: dto,
     });
   }
 

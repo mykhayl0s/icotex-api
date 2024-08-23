@@ -176,7 +176,7 @@ export class LeadController {
   @Patch('verification')
   @ApiBearerAuth()
   @Roles(ERole.Admin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   async updateVerefication(@Body() dto: UpdateVerificationDto) {
     return this.leadService.updateVerification(dto);
   }
