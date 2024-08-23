@@ -187,7 +187,12 @@ export class LeadService {
   }
 
   async updateVerification(dto: VereficationDto | UpdateVerificationDto) {
-    return this.leadModel.findByIdAndUpdate(dto.lead, { verification: dto });
+    return this.leadModel.findByIdAndUpdate(dto.lead, {
+      verification: {
+        ...dto,
+        verifiedAt: new Date(),
+      },
+    });
   }
 
   async remove(id: string) {
