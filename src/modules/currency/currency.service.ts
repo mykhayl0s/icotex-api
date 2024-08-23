@@ -41,4 +41,22 @@ export class CurrencyService {
   remove(_id: string) {
     return this.currencyModel.find({ _id });
   }
+
+  async onModuleInit() {
+    const defaultCurrencies = [
+      { code: 'btc', name: 'Bitcoind', symbol: 'BTC', exchangeRate: 59000 },
+      { code: 'usd', name: 'US Dollar', symbol: 'USD', exchangeRate: 1 },
+      { code: 'eth', name: 'Etherum', symbol: 'ETH', exchangeRate: 27000 },
+      { code: 'eur', name: 'Euro', symbol: 'EUR', exchangeRate: 1.1 },
+      { code: 'gbp', name: 'GB Pound', symbol: 'BTC', exchangeRate: 1.3 },
+    ];
+
+    for (const currency of defaultCurrencies) {
+      const existingCurrency = await this.currencyModel.findOne({
+        code: currency.code,
+      });
+
+      if (!existingCurrency) this.currencyModel.create(currency);
+    }
+  }
 }
