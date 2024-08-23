@@ -29,7 +29,7 @@ export class Lead {
   @Prop({ required: true, default: 0 })
   deposited: number;
 
-  @Prop({ type: { type: Types.ObjectId, ref: User.name } })
+  @Prop({ type: Types.ObjectId, ref: User.name })
   sale: Types.ObjectId;
 
   @Prop({ required: true, default: 'new' })
