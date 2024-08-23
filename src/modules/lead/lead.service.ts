@@ -26,7 +26,12 @@ export class LeadService {
   ) {}
 
   async create(createLeadDto: CreateLeadDto) {
-    return this.leadModel.create(createLeadDto);
+    return this.leadModel.create({
+      ...createLeadDto,
+      sale: createLeadDto?.sale
+        ? new Types.ObjectId(createLeadDto.sale)
+        : createLeadDto?.sale,
+    });
   }
 
   async createTransaction(createTransactionDto: CreateTransactionDto) {
@@ -75,7 +80,8 @@ export class LeadService {
       .find()
       .skip(skip)
       .limit(limit)
-      .populate({ path: 'transactions', model: 'Transaction' });
+      .populate({ path: 'transactions', model: 'Transaction' })
+      .populate({ path: 'sale', model: 'User' });
     const count = await this.leadModel.countDocuments({});
     return {
       data: leads,
@@ -86,7 +92,8 @@ export class LeadService {
   async findOne(id: string) {
     const lead = await this.leadModel
       .findById(id)
-      .populate({ path: 'transactions', model: 'Transaction' });
+      .populate({ path: 'transactions', model: 'Transaction' })
+      .populate({ path: 'sale', model: 'User' });
 
     const currencies = await this.currencyService.getCurrenciesMap();
     const populatedBalance = {
@@ -125,7 +132,8 @@ export class LeadService {
   async finByUser(id: string) {
     const lead = await this.leadModel
       .findOne({ user: id })
-      .populate({ path: 'transactions', model: 'Transaction' });
+      .populate({ path: 'transactions', model: 'Transaction' })
+      .populate({ path: 'sale', model: User.name });
 
     const currencies = await this.currencyService.getCurrenciesMap();
     const populatedBalance = {
@@ -163,7 +171,11 @@ export class LeadService {
 
   async update(id: string, updateLeadDto: UpdateLeadDto) {
     const lead = await this.leadModel.findById(id);
-    Object.assign(lead, updateLeadDto);
+    Object.assign(lead, {
+      sale: updateLeadDto?.sale
+        ? new Types.ObjectId(updateLeadDto.sale)
+        : updateLeadDto?.sale,
+    });
     return lead.save();
   }
 

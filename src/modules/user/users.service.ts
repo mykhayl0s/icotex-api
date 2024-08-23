@@ -48,6 +48,7 @@ export class UserService {
         name: 'icotexadmin',
         password: 'H4rdPassW@RD1!',
         email: 'admin@icotex.com',
+        username: 'admin@icotex.com',
         role: ERole.Admin,
       });
       await newUser.save();

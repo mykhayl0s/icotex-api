@@ -59,9 +59,9 @@ export class CreateLeadDto {
   deposited: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  sale: number;
+  sale: string;
 
   @ApiProperty()
   @IsString()
