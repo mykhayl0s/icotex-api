@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Put,
 } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
@@ -173,7 +174,7 @@ export class LeadController {
     return this.leadService.verification(dto);
   }
 
-  @Patch('verification')
+  @Put('verification')
   @ApiBearerAuth()
   @Roles(ERole.Admin)
   @UseGuards(JwtAuthGuard)
