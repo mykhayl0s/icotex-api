@@ -38,9 +38,6 @@ export class Lead {
   @Prop({ default: '' })
   comment: string;
 
-  @Prop({ default: 0 })
-  messagesCount: number;
-
   @Prop({ required: true, default: 'usd' })
   currency: string;
 

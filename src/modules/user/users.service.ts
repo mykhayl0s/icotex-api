@@ -22,8 +22,16 @@ export class UserService {
     return newUser.save();
   }
 
-  async findAll({ skip = 0, limit = 10 }: { skip?: number; limit?: number }) {
-    const users = await this.userModel.find({}).skip(skip).limit(limit);
+  async findAll({
+    skip = 0,
+    limit = 10,
+    role,
+  }: {
+    skip?: number;
+    limit?: number;
+    role?: ERole;
+  }) {
+    const users = await this.userModel.find({ role }).skip(skip).limit(limit);
     const count = await this.userModel.find({}).countDocuments({});
     return {
       data: users,

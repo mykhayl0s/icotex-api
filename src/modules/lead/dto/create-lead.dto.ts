@@ -77,9 +77,4 @@ export class CreateLeadDto {
   @IsString()
   @IsOptional()
   currency: string;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  messagesCount: number;
 }
