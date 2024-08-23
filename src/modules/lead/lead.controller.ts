@@ -29,6 +29,7 @@ import { ERole } from 'src/common/roles.enum';
 import { AuthUser } from 'src/common/user.decorator';
 import { UserService } from '../user/users.service';
 import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
+import { Types } from 'mongoose';
 
 @Controller('lead')
 @ApiTags('lead')
@@ -51,7 +52,7 @@ export class LeadController {
       gbp: 0,
     };
 
-    await this.userService.create({
+    const user = await this.userService.create({
       email: createLeadDto.email,
       password: createLeadDto.password,
       name: `${createLeadDto.firstName} ${createLeadDto.lastName}`,
@@ -59,7 +60,12 @@ export class LeadController {
       username: createLeadDto.email,
     });
 
-    return this.leadService.create({ ...createLeadDto, balance });
+    return this.leadService.create({
+      ...createLeadDto,
+      //@ts-ignore
+      user: user._id,
+      balance,
+    });
   }
 
   @Post('transaction')
@@ -147,7 +153,7 @@ export class LeadController {
 
   @Patch(':id')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.User)
   @UseGuards(JwtAuthGuard, RolesGuard)
   update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
     return this.leadService.update(id, updateLeadDto);
