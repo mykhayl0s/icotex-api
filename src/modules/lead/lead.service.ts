@@ -12,6 +12,7 @@ import {
 import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
 import { CurrencyService } from '../currency/currency.service';
 import { User, UserDocument } from '../user/schemas/user.schema';
+import { UpdateVerificationDto, VereficationDto } from './dto/verefication.dto';
 
 @Injectable()
 export class LeadService {
@@ -163,6 +164,14 @@ export class LeadService {
   async update(id: string, updateLeadDto: UpdateLeadDto) {
     const lead = await this.leadModel.findById(id);
     Object.assign(lead, updateLeadDto);
+    return lead.save();
+  }
+
+  async verification(dto: VereficationDto | UpdateVerificationDto) {
+    const lead = await this.leadModel.findById(dto.lead);
+    if (!lead) throw new NotFoundException();
+    console.log(lead);
+    lead.verification = dto as any;
     return lead.save();
   }
 

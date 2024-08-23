@@ -49,6 +49,34 @@ export class Lead {
 
   @Prop()
   user: string;
+
+  @Prop({
+    type: {
+      status: String,
+      firstName: String,
+      lastName: String,
+      dateOfBirth: Date,
+      country: String,
+      address: String,
+      city: String,
+      zipCode: String,
+      image: String,
+      verifiedAt: Date,
+    },
+    default: {},
+  })
+  verification: {
+    status: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth: Date;
+    country: string;
+    address: string;
+    city: string;
+    zipCode: string;
+    image: string;
+    verifiedAt?: Date;
+  };
 }
 
 export const LeadSchema = SchemaFactory.createForClass(Lead);

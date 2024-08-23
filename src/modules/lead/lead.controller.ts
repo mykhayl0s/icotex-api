@@ -19,17 +19,13 @@ import {
   UpdateTransactionDto,
 } from './dto/create-transaction.dto';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import {
-  AuthUserPayload,
-  RequestWithUser,
-  RolesGuard,
-} from 'src/common/roles.guard';
+import { AuthUserPayload, RolesGuard } from 'src/common/roles.guard';
 import { Roles } from 'src/common/roles.decorator';
 import { ERole } from 'src/common/roles.enum';
 import { AuthUser } from 'src/common/user.decorator';
 import { UserService } from '../user/users.service';
 import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
-import { Types } from 'mongoose';
+import { UpdateVerificationDto, VereficationDto } from './dto/verefication.dto';
 
 @Controller('lead')
 @ApiTags('lead')
@@ -165,5 +161,24 @@ export class LeadController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   async remove(@Param('id') id: string) {
     return this.leadService.remove(id);
+  }
+
+  @Post('verification')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async verefication(
+    @Body() dto: VereficationDto,
+    @AuthUser() user: AuthUserPayload,
+  ) {
+    dto.lead = user._id;
+    return this.leadService.verification(dto);
+  }
+
+  @Patch('verification')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async updateVerefication(@Body() dto: UpdateVerificationDto) {
+    return this.leadService.verification(dto);
   }
 }
