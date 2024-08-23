@@ -57,7 +57,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch()
   @ApiBearerAuth()
   @Roles(ERole.Admin, ERole.Manager)
   @UseGuards(JwtAuthGuard, RolesGuard)
