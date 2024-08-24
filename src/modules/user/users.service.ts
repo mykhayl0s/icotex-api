@@ -44,7 +44,9 @@ export class UserService {
   }
 
   async update(id: string, dto: UpdateUserDto) {
-    return this.userModel.findByIdAndUpdate(id, dto);
+    const user = await this.userModel.findById(id);
+    Object.assign(user, dto);
+    return user.save();
   }
 
   async updateRoom(id: string, room: string) {
