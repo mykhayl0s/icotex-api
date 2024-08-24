@@ -41,11 +41,11 @@ export class AuthService {
       throw new BadRequestException('Invalid credentials');
     }
 
-    delete user.password;
-    delete user.refreshToken;
+    const { role, email, username, _id } = user;
+    const payload = { role, email, username, _id };
 
-    const access_token = this.generateToken(user, '1h');
-    const refresh_token = this.generateToken(user, '7d');
+    const access_token = this.generateToken(payload, '1h');
+    const refresh_token = this.generateToken(payload, '7d');
 
     await this.userService.update(user._id, {
       refreshToken: refresh_token,
@@ -60,17 +60,18 @@ export class AuthService {
   async refreshAccessToken(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken);
-      console.log(payload);
+
       const user = await this.userService.findById(payload._id);
 
       if (!user) {
         throw new BadRequestException('Invalid refresh token');
       }
+      
+      const { role, email, username, _id } = user;
+      const newPayload = { role, email, username, _id };
 
-      delete user.refreshToken;
-
-      const accessToken = this.generateToken(user, '1h');
-      const refresh_token = this.generateToken(user, '7d');
+      const accessToken = this.generateToken(newPayload, '1h');
+      const refresh_token = this.generateToken(newPayload, '7d');
 
       return { access_token: accessToken, refresh_token };
     } catch (e) {
