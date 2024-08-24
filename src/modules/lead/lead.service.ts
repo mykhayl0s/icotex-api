@@ -171,7 +171,9 @@ export class LeadService {
 
   async update(id: string, updateLeadDto: UpdateLeadDto) {
     const lead = await this.leadModel.findById(id);
+    console.log(updateLeadDto);
     Object.assign(lead, {
+      ...updateLeadDto,
       sale: updateLeadDto?.sale
         ? new Types.ObjectId(updateLeadDto.sale)
         : updateLeadDto?.sale,
