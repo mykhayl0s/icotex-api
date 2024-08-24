@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsMongoId, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsMongoId, IsOptional, IsString } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class CreateTeamDto {
   @ApiProperty()
@@ -14,14 +16,20 @@ export class CreateTeamDto {
   description: string;
 
   @ApiPropertyOptional({ type: String })
-  @IsMongoId()
+  // @IsString()
+  // @IsMongoId()
+  @Transform(({ value }) => new Types.ObjectId(value as string))
   manager: string;
 
   @ApiProperty({ type: [String] })
-  @IsMongoId({ each: true })
+  // @IsMongoId({ each: true })
+  // @IsString({ each: true })
+  @Transform(({ value }) => value.map((el) => new Types.ObjectId(el as string)))
   teamLeads: string[];
 
   @ApiProperty({ type: [String] })
-  @IsMongoId({ each: true })
+  // @IsMongoId({ each: true })
+  // @IsString({ each: true })
+  @Transform(({ value }) => value.map((el) => new Types.ObjectId(el as string)))
   sales: string[];
 }
