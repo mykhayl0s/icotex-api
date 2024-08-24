@@ -35,6 +35,8 @@ export class TeamService {
       return acc;
     }, [] as Types.ObjectId[]);
 
+    console.log({ teamIds });
+
     return teamIds;
   }
 

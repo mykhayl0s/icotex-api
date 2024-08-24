@@ -132,9 +132,13 @@ export class LeadController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
   findAll(@Query() { limit, skip }: any, @AuthUser() user: AuthUserPayload) {
+    console.log({ user });
     return this.leadService.findAll({
       limit,
       skip,
