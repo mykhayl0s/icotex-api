@@ -21,7 +21,6 @@ export class AuthService {
     password: string;
   }): Promise<User | null> {
     const user = await this.userService.findOne(email);
-    console.log(user);
     if (user && (await this.comparePassword(password, user.password))) {
       return user;
     }
@@ -66,7 +65,7 @@ export class AuthService {
       if (!user) {
         throw new BadRequestException('Invalid refresh token');
       }
-      
+
       const { role, email, username, _id } = user;
       const newPayload = { role, email, username, _id };
 
