@@ -39,16 +39,37 @@ export class LeadService {
       ...createTransactionDto,
       lead: new Types.ObjectId(createTransactionDto.lead),
     });
-    const lead = await this.leadModel.findById(createTransactionDto.lead);
-    if (!(lead.balance instanceof Map)) {
-      lead.balance = new Map(Object.entries(lead.balance));
-    }
-    const currentAmount = lead.balance.get(transaction.currency) || 0;
-    lead.balance.set(transaction.currency, currentAmount + transaction.amount);
-    lead.transactions.push(new Types.ObjectId(transaction._id));
-    await lead.save();
 
-    return transaction;
+    if (createTransactionDto.type === 'Deposit') {
+      const lead = await this.leadModel.findById(createTransactionDto.lead);
+      if (!(lead.balance instanceof Map)) {
+        lead.balance = new Map(Object.entries(lead.balance));
+      }
+      const currentAmount = lead.balance.get(transaction.currency) || 0;
+      lead.balance.set(
+        transaction.currency,
+        currentAmount + transaction.amount,
+      );
+      lead.transactions.push(new Types.ObjectId(transaction._id));
+      await lead.save();
+
+      return transaction;
+    }
+
+    if (createTransactionDto.type === 'Withdrawal') {
+      const lead = await this.leadModel.findById(createTransactionDto.lead);
+      if (!(lead.balance instanceof Map)) {
+        lead.balance = new Map(Object.entries(lead.balance));
+      }
+      const currentAmount = lead.balance.get(transaction.currency) || 0;
+      lead.balance.set(
+        transaction.currency,
+        currentAmount - transaction.amount,
+      );
+      lead.transactions.push(new Types.ObjectId(transaction._id));
+      await lead.save();
+      return transaction;
+    }
   }
 
   async findAllTransactions({
