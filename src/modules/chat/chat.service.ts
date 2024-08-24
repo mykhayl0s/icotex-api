@@ -18,9 +18,7 @@ export class ChatService {
     return createdMessage.save();
   }
 
-  async getMessages(userId: string): Promise<Message[]> {
-    return this.messageModel
-      .find({ participants: { $in: [userId, new Types.ObjectId(userId)] } })
-      .exec();
+  async getMessages(room: string): Promise<Message[]> {
+    return this.messageModel.find({ room }).exec();
   }
 }

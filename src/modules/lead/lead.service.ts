@@ -180,10 +180,9 @@ export class LeadService {
   }
 
   async verification({ lead, ...dto }: VereficationDto) {
-    return this.leadModel.findOneAndUpdate(
-      { user: lead },
-      { verification: dto },
-    );
+    const dbLead = await this.leadModel.findOne({ user: lead });
+    dbLead.verification = dto;
+    return dbLead.save();
   }
 
   async updateVerification({ lead, ...dto }: UpdateVerificationDto) {

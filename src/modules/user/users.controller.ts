@@ -63,7 +63,7 @@ export class UsersController {
   @Roles(ERole.Admin, ERole.Manager)
   @UseGuards(JwtAuthGuard, RolesGuard)
   update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto.id, updateUserDto);
+    return this.usersService.update(updateUserDto._id, updateUserDto);
   }
 
   @Delete(':id')

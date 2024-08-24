@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty()
   @IsMongoId()
-  id?: string;
+  _id?: string;
 
   refreshToken: string;
 }

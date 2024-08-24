@@ -14,7 +14,11 @@ import { AuthUserPayload } from 'src/common/roles.guard';
 import { UserService } from '../user/users.service';
 import { v4 as uuid } from 'uuid';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -60,13 +64,13 @@ export class ChatGateway
   ) {
     const user = this.clientUserMap.get(client.id);
 
-    await this.chatService.createMessage({
+    const createdMessage = await this.chatService.createMessage({
       room,
       content: message,
       user,
     });
 
-    this.server.to(room).emit('receiveMessage', message);
+    this.server.to(room).emit('receiveMessage', createdMessage);
   }
 
   @SubscribeMessage('joinRoom')

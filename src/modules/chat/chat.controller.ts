@@ -1,7 +1,5 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthUserPayload } from 'src/common/roles.guard';
-import { AuthUser } from 'src/common/user.decorator';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 
@@ -9,11 +7,11 @@ import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 @ApiTags('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
-  
-  @Get()
+
+  @Get(':user')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  getMessages(@AuthUser() user: AuthUserPayload) {
-    return this.chatService.getMessages(user._id);
+  getMessages(@Param('user') user: string) {
+    return this.chatService.getMessages(user);
   }
 }
