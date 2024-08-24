@@ -111,13 +111,15 @@ export class LeadController {
   @ApiQuery({ name: 'filterByStatus', required: false })
   findAllTransactions(
     @Query() { skip, limit, lead, sortByDate, filterByStatus }: any,
+    @AuthUser() user: AuthUserPayload,
   ) {
     return this.leadService.findAllTransactions({
       lead,
       skip: +skip,
       limit: +limit,
       sortByDate,
-      filterByStatus
+      filterByStatus,
+      restrictedUser: user.role !== ERole.Admin ? user._id : null,
     });
   }
 
@@ -132,8 +134,12 @@ export class LeadController {
   @Get()
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
-  findAll(@Query() { limit, skip }: any) {
-    return this.leadService.findAll({ limit, skip });
+  findAll(@Query() { limit, skip }: any, @AuthUser() user: AuthUserPayload) {
+    return this.leadService.findAll({
+      limit,
+      skip,
+      restrictedUser: user.role !== ERole.Admin ? user._id : null,
+    });
   }
 
   @Get(':id')

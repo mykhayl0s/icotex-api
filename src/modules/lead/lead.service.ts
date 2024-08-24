@@ -13,16 +13,19 @@ import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
 import { CurrencyService } from '../currency/currency.service';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { UpdateVerificationDto, VereficationDto } from './dto/verefication.dto';
+import { TeamService } from '../team/team.service';
 
 @Injectable()
 export class LeadService {
   constructor(
-    @InjectModel(Lead.name) private readonly leadModel: Model<LeadDocument>,
+    @InjectModel(Lead.name)
+    private readonly leadModel: Model<LeadDocument>,
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<TransactionDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
     private readonly currencyService: CurrencyService,
+    private readonly teamService: TeamService,
   ) {}
 
   async create(createLeadDto: CreateLeadDto) {
@@ -78,12 +81,14 @@ export class LeadService {
     limit,
     sortByDate,
     filterByStatus,
+    restrictedUser,
   }: {
     lead: string | Types.ObjectId;
     skip: number;
     limit: number;
     sortByDate: 'asc' | 'desc';
     filterByStatus: string;
+    restrictedUser: null | Types.ObjectId | string;
   }) {
     const query = {
       ...(lead ? new Types.ObjectId(lead) : {}),
@@ -101,14 +106,27 @@ export class LeadService {
     };
   }
 
-  async findAll({ skip, limit }: { skip: any; limit: any }) {
+  async findAll({
+    skip,
+    limit,
+    restrictedUser,
+  }: {
+    skip: any;
+    limit: any;
+    restrictedUser: null | Types.ObjectId | string;
+  }) {
+    let query = {};
+    if (restrictedUser) {
+      const usrs = await this.teamService.findUserInTeam(restrictedUser);
+      query = { sale: { $in: usrs } };
+    }
     const leads = await this.leadModel
-      .find()
+      .find(query)
       .skip(skip)
       .limit(limit)
       .populate({ path: 'transactions', model: 'Transaction' })
       .populate({ path: 'sale', model: 'User' });
-    const count = await this.leadModel.countDocuments({});
+    const count = await this.leadModel.countDocuments(query);
     return {
       data: leads,
       count,

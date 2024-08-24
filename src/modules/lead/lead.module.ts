@@ -7,6 +7,7 @@ import { Transaction, TransactionSchema } from './schemas/transaction.schema';
 import { UserModule } from '../user/users.module';
 import { CurrencyModule } from '../currency/currency.module';
 import { User, UserSchema } from '../user/schemas/user.schema';
+import { TeamModule } from '../team/team.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { User, UserSchema } from '../user/schemas/user.schema';
     ]),
     UserModule,
     CurrencyModule,
+    TeamModule
   ],
   controllers: [LeadController],
   providers: [LeadService],
