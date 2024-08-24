@@ -56,13 +56,18 @@ export class LeadService {
     skip,
     limit,
     sortByDate,
+    filterByStatus,
   }: {
     lead: string | Types.ObjectId;
     skip: number;
     limit: number;
     sortByDate: 'asc' | 'desc';
+    filterByStatus: string;
   }) {
-    const query = { ...(lead ? new Types.ObjectId(lead) : {}) };
+    const query = {
+      ...(lead ? new Types.ObjectId(lead) : {}),
+      ...(filterByStatus ? { status: filterByStatus } : {}),
+    };
     const transactions = await this.transactionModel
       .find({ ...query })
       .skip(skip)
