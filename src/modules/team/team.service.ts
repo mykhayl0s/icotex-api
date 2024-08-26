@@ -48,7 +48,11 @@ export class TeamService {
       .populate({ path: 'teamLeads', model: 'User' })
       .populate({ path: 'sales', model: 'User' })
       .populate({ path: 'manager', model: 'User' });
-    const count = await this.teamModel.find({}).countDocuments({});
+    const count = await this.teamModel
+      .find({})
+      .skip(skip)
+      .limit(limit)
+      .countDocuments();
     return {
       data: teams,
       count,

@@ -18,16 +18,13 @@ export class Lead {
   @Prop({ required: true })
   phone: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   country: string;
 
   @Prop({
     required: true,
   })
   balance: Map<string, number>;
-
-  @Prop({ required: true, default: 0 })
-  deposited: number;
 
   @Prop({ type: Types.ObjectId, ref: User.name })
   sale: Types.ObjectId;

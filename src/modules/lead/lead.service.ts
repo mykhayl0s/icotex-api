@@ -99,7 +99,11 @@ export class LeadService {
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: sortByDate });
-    const count = await this.transactionModel.countDocuments({});
+    const count = await this.transactionModel
+      .find({ ...query })
+      .skip(skip)
+      .limit(limit)
+      .countDocuments({});
     return {
       data: transactions,
       count,
@@ -126,7 +130,11 @@ export class LeadService {
       .limit(limit)
       .populate({ path: 'transactions', model: 'Transaction' })
       .populate({ path: 'sale', model: 'User' });
-    const count = await this.leadModel.countDocuments(query);
+    const count = await this.leadModel
+      .find(query)
+      .skip(skip)
+      .limit(limit)
+      .countDocuments(query);
     return {
       data: leads,
       count,
@@ -150,11 +158,21 @@ export class LeadService {
       if (lead.currency === key) {
         chosenValue = value;
       } else {
-        chosenValue = parseFloat(
-          Number(value * ((currencies.get(key) || 1) / chosenCurrency)).toFixed(
-            2,
-          ),
+        function countDecimalPlaces(num: number): number {
+          const parts = num.toString().split('.');
+          if (parts.length === 1) return 0;
+          return parts[1].length;
+        }
+        const newValue = Number(
+          value * ((currencies.get(key) || 1) / chosenCurrency),
         );
+        if (countDecimalPlaces(newValue) >= 8) {
+          chosenValue = parseFloat(newValue.toFixed(8));
+        } else {
+          chosenValue = parseFloat(
+            newValue.toFixed(countDecimalPlaces(newValue)),
+          );
+        }
       }
 
       const usdValue = parseFloat(

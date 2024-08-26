@@ -42,21 +42,11 @@ export class CreateLeadDto {
   phone: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  country: string;
-
-  @ApiProperty()
   @ValidateNested()
   @Type(() => Balance)
   @IsNotEmpty()
   @IsOptional()
   balance: Balance;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  deposited: number;
 
   @ApiProperty()
   @IsString()
