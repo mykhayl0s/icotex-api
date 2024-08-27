@@ -18,7 +18,11 @@ export class ChatService {
     return createdMessage.save();
   }
 
-  async getMessages(room: string): Promise<Message[]> {
-    return this.messageModel.find({ room }).exec();
+  async getMessages(
+    room: string,
+  ): Promise<{ count: number; messages: Message[] }> {
+    const count = await this.messageModel.countDocuments({ room });
+    const messages = await this.messageModel.find({ room });
+    return { count, messages };
   }
 }
