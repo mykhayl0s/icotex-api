@@ -41,7 +41,7 @@ export class UsersController {
 
   @Get()
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Retention,)
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Retention)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
@@ -52,7 +52,13 @@ export class UsersController {
 
   @Get(':id')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Retention,, ERole.Sale)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.TeamLead,
+    ERole.Retention,
+    ERole.Sale,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
