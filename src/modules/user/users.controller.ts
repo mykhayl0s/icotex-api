@@ -50,6 +50,15 @@ export class UsersController {
     return this.usersService.findAll({ skip: +skip, limit: +limit, role });
   }
 
+  @Get('findAllByRole')
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Retention)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiQuery({ name: 'role', required: false, isArray: true })
+  findAllByRole(@Query() { role }: any) {
+    return this.usersService.findAll({ role });
+  }
+
   @Get(':id')
   @ApiBearerAuth()
   @Roles(
