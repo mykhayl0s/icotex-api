@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { Lead, LeadDocument } from './schemas/lead.schema';
@@ -14,6 +18,9 @@ import { CurrencyService } from '../currency/currency.service';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { UpdateVerificationDto, VereficationDto } from './dto/verefication.dto';
 import { TeamService } from '../team/team.service';
+import { UserService } from '../user/users.service';
+import { ERole } from 'src/common/roles.enum';
+import { error } from 'console';
 
 @Injectable()
 export class LeadService {
@@ -26,15 +33,44 @@ export class LeadService {
     private readonly userModel: Model<UserDocument>,
     private readonly currencyService: CurrencyService,
     private readonly teamService: TeamService,
+    private readonly userService: UserService,
   ) {}
 
   async create(createLeadDto: CreateLeadDto) {
-    return this.leadModel.create({
-      ...createLeadDto,
-      sale: createLeadDto?.sale
-        ? new Types.ObjectId(createLeadDto.sale)
-        : createLeadDto?.sale,
-    });
+    let userId;
+    let leadId;
+    try {
+      const balance = {
+        btc: 0,
+        eth: 0,
+        usd: 0,
+        eur: 0,
+        gbp: 0,
+      };
+
+      const user = await this.userService.create({
+        email: createLeadDto.email,
+        password: createLeadDto.password,
+        name: `${createLeadDto.firstName} ${createLeadDto.lastName}`,
+        role: ERole.User,
+        username: createLeadDto.email,
+      });
+      userId = user._id;
+      const lead = await this.leadModel.create({
+        ...createLeadDto,
+        balance,
+        sale: createLeadDto?.sale
+          ? new Types.ObjectId(createLeadDto.sale)
+          : createLeadDto?.sale,
+      });
+      leadId = lead._id;
+      return lead;
+    } catch (e) {
+      if (userId) await this.userService.delete(userId);
+      if (leadId) await this.leadModel.findByIdAndDelete(leadId);
+      console.log(e);
+      throw new BadRequestException(`Something went wrong, error`);
+    }
   }
 
   async createTransaction(createTransactionDto: CreateTransactionDto) {

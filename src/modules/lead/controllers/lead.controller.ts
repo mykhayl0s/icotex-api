@@ -10,58 +10,37 @@ import {
   Query,
   Put,
 } from '@nestjs/common';
-import { LeadService } from './lead.service';
-import { CreateLeadDto } from './dto/create-lead.dto';
-import { UpdateLeadDto } from './dto/update-lead.dto';
+import { LeadService } from '../lead.service';
+import { CreateLeadDto } from '../dto/create-lead.dto';
+import { UpdateLeadDto } from '../dto/update-lead.dto';
 import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import {
   CreateTransactionDto,
   UpdateTransactionDto,
-} from './dto/create-transaction.dto';
-import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+} from '../dto/create-transaction.dto';
+import { JwtAuthGuard } from '../../auth/jwt.auth.guard';
 import { AuthUserPayload, RolesGuard } from 'src/common/roles.guard';
 import { Roles } from 'src/common/roles.decorator';
 import { ERole } from 'src/common/roles.enum';
 import { AuthUser } from 'src/common/user.decorator';
-import { UserService } from '../user/users.service';
-import { UpdateLeadBalance } from './dto/update-lead-balance.dto';
-import { UpdateVerificationDto, VereficationDto } from './dto/verefication.dto';
+import { UserService } from '../../user/users.service';
+import { UpdateLeadBalance } from '../dto/update-lead-balance.dto';
+import {
+  UpdateVerificationDto,
+  VereficationDto,
+} from '../dto/verefication.dto';
 
 @Controller('lead')
 @ApiTags('lead')
 export class LeadController {
-  constructor(
-    private readonly leadService: LeadService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly leadService: LeadService) {}
 
   @Post()
   @ApiBearerAuth()
   @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async create(@Body() createLeadDto: CreateLeadDto) {
-    const balance = {
-      btc: 0,
-      eth: 0,
-      usd: 0,
-      eur: 0,
-      gbp: 0,
-    };
-
-    const user = await this.userService.create({
-      email: createLeadDto.email,
-      password: createLeadDto.password,
-      name: `${createLeadDto.firstName} ${createLeadDto.lastName}`,
-      role: ERole.User,
-      username: createLeadDto.email,
-    });
-
-    return this.leadService.create({
-      ...createLeadDto,
-      //@ts-ignore
-      user: user._id,
-      balance,
-    });
+    return this.leadService.create(createLeadDto);
   }
 
   @Post('transaction')
