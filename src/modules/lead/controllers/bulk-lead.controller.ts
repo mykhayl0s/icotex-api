@@ -16,7 +16,13 @@ export class BulkLeadController {
 
   @Post()
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.Sale,
+    ERole.TeamLead,
+    ERole.Retention,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   async create(@Body() createLeadDto: CreateLeadDto[]) {
     return Promise.all(createLeadDto.map((el) => this.leadService.create(el)));
@@ -24,7 +30,13 @@ export class BulkLeadController {
 
   @Patch()
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.User)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.TeamLead,
+    ERole.Retention,
+    ERole.User,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   update(@Body() updateLeadDto: [UpdateLeadDto]) {
     return Promise.all(

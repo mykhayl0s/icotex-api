@@ -37,7 +37,13 @@ export class LeadController {
 
   @Post()
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.Sale,
+    ERole.TeamLead,
+    ERole.Retention,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   async create(@Body() createLeadDto: CreateLeadDto) {
     return this.leadService.create(createLeadDto);
@@ -45,7 +51,13 @@ export class LeadController {
 
   @Post('transaction')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.Sale,
+    ERole.TeamLead,
+    ERole.Retention,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   createTransaction(
     @Body() createTransactionDto: CreateTransactionDto,
@@ -59,7 +71,13 @@ export class LeadController {
 
   @Patch('transaction')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.Sale,
+    ERole.TeamLead,
+    ERole.Retention,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   updateTransaction(
     @Body() createTransactionDto: UpdateTransactionDto,
@@ -73,7 +91,7 @@ export class LeadController {
 
   @Delete('transaction/:id')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Retention)
   @UseGuards(JwtAuthGuard, RolesGuard)
   deleteTransaction(@Param('id') id: string) {
     return this.leadService.deleteTransaction(id);
@@ -81,7 +99,13 @@ export class LeadController {
 
   @Get('transactions')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.Sale,
+    ERole.TeamLead,
+    ERole.Retention,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
@@ -104,7 +128,7 @@ export class LeadController {
 
   @Patch('balance')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead)
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.Retention)
   @UseGuards(JwtAuthGuard, RolesGuard)
   updateLeadBalance(@Body() dto: UpdateLeadBalance) {
     return this.leadService.updateLeadBalance(dto);
@@ -112,7 +136,13 @@ export class LeadController {
 
   @Get()
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.Sale,
+    ERole.TeamLead,
+    ERole.Retention,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
@@ -127,7 +157,13 @@ export class LeadController {
 
   @Get(':id')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.Sale,
+    ERole.TeamLead,
+    ERole.Retention,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   async findOne(@Param('id') id: string) {
     return this.leadService.findOne(id);
@@ -142,7 +178,13 @@ export class LeadController {
 
   @Patch(':id')
   @ApiBearerAuth()
-  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.User)
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.TeamLead,
+    ERole.Retention,
+    ERole.User,
+  )
   @UseGuards(JwtAuthGuard, RolesGuard)
   update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
     return this.leadService.update(id, updateLeadDto);

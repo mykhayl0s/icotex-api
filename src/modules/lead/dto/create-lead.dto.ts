@@ -56,6 +56,11 @@ export class CreateLeadDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  retention: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
   status: string;
 
   @ApiProperty()

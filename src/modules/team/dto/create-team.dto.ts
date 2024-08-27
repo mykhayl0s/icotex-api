@@ -32,4 +32,10 @@ export class CreateTeamDto {
   // @IsString({ each: true })
   @Transform(({ value }) => value.map((el) => new Types.ObjectId(el as string)))
   sales: string[];
+
+  @ApiProperty({ type: [String] })
+  // @IsMongoId({ each: true })
+  // @IsString({ each: true })
+  @Transform(({ value }) => value.map((el) => new Types.ObjectId(el as string)))
+  retentions: string[];
 }

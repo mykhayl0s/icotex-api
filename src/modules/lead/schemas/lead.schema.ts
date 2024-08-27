@@ -29,6 +29,9 @@ export class Lead {
   @Prop({ type: Types.ObjectId, ref: User.name })
   sale: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, ref: User.name })
+  retention: Types.ObjectId;
+
   @Prop({ required: true, default: 'new' })
   status: string;
 

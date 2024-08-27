@@ -22,6 +22,9 @@ export class Team {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
   sales: Types.ObjectId[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
+  retentions: Types.ObjectId[];
 }
 
 export const TeamSchema = SchemaFactory.createForClass(Team);

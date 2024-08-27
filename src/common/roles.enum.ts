@@ -1,7 +1,8 @@
 export enum ERole {
-    Admin = 'Admin',
-    Manager = 'Manager',
-    TeamLead = 'TeamLead',
-    Sale = 'Sale',
-    User = 'User'
-  }
+  Admin = 'Admin',
+  Manager = 'Manager',
+  TeamLead = 'TeamLead',
+  Sale = 'Sale',
+  User = 'User',
+  Retention = 'Retention',
+}
