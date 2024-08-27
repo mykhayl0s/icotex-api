@@ -7,16 +7,23 @@ import { LeadModule } from './modules/lead/lead.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { CurrencyModule } from './modules/currency/currency.module';
 import { FileModule } from './modules/file/file.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     UserModule,
     AuthModule,
-    MongooseModule.forRoot(
-      'mongodb+srv://kapustinpavlo:vH0bqJCs1cdB52eR@cluster0.1jllz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-    ),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        const uri = configService.get<string>('MONGODB_URL');
+
+        return { uri };
+      },
+      inject: [ConfigService],
+    }),
+
     TeamModule,
     LeadModule,
     ChatModule,

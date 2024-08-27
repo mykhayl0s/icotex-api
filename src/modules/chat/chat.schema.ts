@@ -13,6 +13,9 @@ export class Message {
 
   @Prop({ required: true })
   content: string;
+
+  @Prop({ required: false, default: false, type: Boolean})
+  isNew: boolean;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

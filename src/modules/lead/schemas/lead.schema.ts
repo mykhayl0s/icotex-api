@@ -12,7 +12,7 @@ export class Lead {
   @Prop({ required: true })
   lastName: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   email: string;
 
   @Prop({ required: true })
@@ -37,6 +37,9 @@ export class Lead {
 
   @Prop({ default: '' })
   comment: string;
+
+  @Prop({ type: Types.ObjectId, ref: User.name, required: false })
+  duplicated: Types.ObjectId;
 
   @Prop({ required: true, default: 'usd' })
   currency: string;

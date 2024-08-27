@@ -59,8 +59,8 @@ export class ChatGateway
 
   @SubscribeMessage('sendMessage')
   async handleMessage(
-    client: Socket,
-    { room, message }: { room: string; message: string },
+      client: Socket,
+      { room, message }: { room: string; message: string },
   ) {
     const user = this.clientUserMap.get(client.id);
 
@@ -68,9 +68,20 @@ export class ChatGateway
       room,
       content: message,
       user,
+      isNew: true,
     });
 
     this.server.to(room).emit('receiveMessage', createdMessage);
+  }
+
+  @SubscribeMessage('readMessage')
+  async handleReadMessage(
+      client,
+      { id }: { id: string },
+  ) {
+    console.log(id)
+   await this.chatService.readMessage({ id });
+    console.log('read message')
   }
 
   @SubscribeMessage('joinRoom')
@@ -83,12 +94,6 @@ export class ChatGateway
   handleLeaveRoom(client: Socket, room: string) {
     client.leave(room);
     console.log(`Client ${client.id} left room ${room}`);
-  }
-
-  @SubscribeMessage('getHistory')
-  async handleGetHistory(client: Socket, room: string) {
-    const messages = await this.chatService.getMessages(room);
-    client.emit('history', messages);
   }
 
   private getTokenFromHeaders(client: Socket) {

@@ -47,6 +47,7 @@ export class TeamService {
       .limit(limit)
       .populate({ path: 'teamLeads', model: 'User' })
       .populate({ path: 'sales', model: 'User' })
+      .populate({ path: 'retentions', model: 'User' })
       .populate({ path: 'manager', model: 'User' });
     const count = await this.teamModel
       .find({})

@@ -38,6 +38,7 @@ export class LeadService {
 
   async create(createLeadDto: CreateLeadDto) {
     let userId;
+    let userEmail;
     let leadId;
     try {
       const balance = {
@@ -48,17 +49,26 @@ export class LeadService {
         gbp: 0,
       };
 
-      const user = await this.userService.create({
-        email: createLeadDto.email,
-        password: createLeadDto.password,
-        name: `${createLeadDto.firstName} ${createLeadDto.lastName}`,
-        role: ERole.User,
-        username: createLeadDto.email,
-      });
-      userId = user._id;
+      const foundUser = await this.userService.findOne(createLeadDto.email)
+      const foundLead = foundUser ? await this.leadModel.findOne({ user: foundUser._id }) : undefined
+
+      if (!foundUser)  {
+        const user = await this.userService.create({
+          email: createLeadDto.email,
+          password: createLeadDto.password,
+          name: `${createLeadDto.firstName} ${createLeadDto.lastName}`,
+          role: ERole.User,
+          username: createLeadDto.email,
+        });
+        userId = user._id;
+        userEmail = user.email;
+      }
+
       const lead = await this.leadModel.create({
         ...createLeadDto,
         balance,
+        user: userId,
+        duplicated: foundLead?._id,
         sale: createLeadDto?.sale
           ? new Types.ObjectId(createLeadDto.sale)
           : createLeadDto?.sale,
@@ -69,7 +79,7 @@ export class LeadService {
       if (userId) await this.userService.delete(userId);
       if (leadId) await this.leadModel.findByIdAndDelete(leadId);
       console.log(e);
-      throw new BadRequestException(`Something went wrong, error`);
+      throw new BadRequestException(`Something went wrong with ${createLeadDto.email}`);
     }
   }
 
@@ -117,7 +127,6 @@ export class LeadService {
     limit,
     sortByDate,
     filterByStatus,
-    restrictedUser,
   }: {
     lead: string | Types.ObjectId;
     skip: number;
@@ -191,7 +200,8 @@ export class LeadService {
       .limit(limit)
       .populate({ path: 'transactions', model: 'Transaction' })
       .populate({ path: 'sale', model: 'User' })
-      .sort({ createdAt: sortByDate });
+      .populate({ path: 'retention', model: 'User' })
+      .sort({ createdAt: sortByDate || 'desc' });
 
     const count = await this.leadModel
       .find(query)
@@ -208,7 +218,8 @@ export class LeadService {
     const lead = await this.leadModel
       .findById(id)
       .populate({ path: 'transactions', model: 'Transaction' })
-      .populate({ path: 'sale', model: 'User' });
+      .populate({ path: 'sale', model: 'User' })
+      .populate({ path: 'retention', model: 'User' });
 
     const currencies = await this.currencyService.getCurrenciesMap();
     const populatedBalance = {
@@ -258,7 +269,8 @@ export class LeadService {
     const lead = await this.leadModel
       .findOne({ user: id })
       .populate({ path: 'transactions', model: 'Transaction' })
-      .populate({ path: 'sale', model: User.name });
+      .populate({ path: 'sale', model: User.name })
+      .populate({ path: 'retention', model: User.name });
 
     const currencies = await this.currencyService.getCurrenciesMap();
     const populatedBalance = {
