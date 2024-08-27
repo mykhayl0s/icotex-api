@@ -150,22 +150,49 @@ export class LeadService {
     skip,
     limit,
     restrictedUser,
+    sortByDate,
+    filterByStatus,
+    search,
   }: {
     skip: any;
     limit: any;
     restrictedUser: null | Types.ObjectId | string;
+    sortByDate: 'asc' | 'desc';
+    filterByStatus: string;
+    search: string;
   }) {
-    let query = {};
+    let query = {
+      ...(search
+        ? {
+            $or: [
+              { email: { $regex: search, $options: 'i' } },
+              { firstName: { $regex: search, $options: 'i' } },
+              { lastName: { $regex: search, $options: 'i' } },
+              { phone: { $regex: search, $options: 'i' } },
+            ],
+          }
+        : {}),
+      ...(filterByStatus
+        ? {
+            status: filterByStatus,
+          }
+        : {}),
+      sale: undefined,
+    };
+    delete query.sale;
     if (restrictedUser) {
       const usrs = await this.teamService.findUserInTeam(restrictedUser);
-      query = { sale: { $in: usrs } };
+      query.sale = { $in: usrs };
     }
+
     const leads = await this.leadModel
       .find(query)
       .skip(skip)
       .limit(limit)
       .populate({ path: 'transactions', model: 'Transaction' })
-      .populate({ path: 'sale', model: 'User' });
+      .populate({ path: 'sale', model: 'User' })
+      .sort({ createdAt: sortByDate });
+
     const count = await this.leadModel
       .find(query)
       .skip(skip)

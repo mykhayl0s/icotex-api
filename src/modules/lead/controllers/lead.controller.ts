@@ -135,23 +135,31 @@ export class LeadController {
   }
 
   @Get()
-  @ApiBearerAuth()
-  @Roles(
-    ERole.Admin,
-    ERole.Manager,
-    ERole.Sale,
-    ERole.TeamLead,
-    ERole.Retention,
-  )
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @ApiBearerAuth()
+  // @Roles(
+  //   ERole.Admin,
+  //   ERole.Manager,
+  //   ERole.Sale,
+  //   ERole.TeamLead,
+  //   ERole.Retention,
+  // )
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
-  findAll(@Query() { limit, skip }: any, @AuthUser() user: AuthUserPayload) {
-    console.log({ user });
+  @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({ name: 'sortByDate', required: false, enum: ['asc', 'desc'] })
+  @ApiQuery({ name: 'filterByStatus', required: false })
+  findAll(
+    @Query() { limit, skip, sortByDate, filterByStatus, search }: any,
+    @AuthUser() user: AuthUserPayload,
+  ) {
     return this.leadService.findAll({
       limit,
       skip,
-      restrictedUser: user.role !== ERole.Admin ? user._id : null,
+      restrictedUser: null,//user.role !== ERole.Admin ? user._id : null,
+      sortByDate,
+      filterByStatus,
+      search,
     });
   }
 
