@@ -15,17 +15,17 @@ export class BulkLeadController {
   constructor(private readonly leadService: LeadService) {}
 
   @Post()
-  // @ApiBearerAuth()
-  // @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.Sale, ERole.TeamLead)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async create(@Body() createLeadDto: CreateLeadDto[]) {
     return Promise.all(createLeadDto.map((el) => this.leadService.create(el)));
   }
 
   @Patch()
-  // @ApiBearerAuth()
-  // @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.User)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @Roles(ERole.Admin, ERole.Manager, ERole.TeamLead, ERole.User)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   update(@Body() updateLeadDto: [UpdateLeadDto]) {
     return Promise.all(
       updateLeadDto.map((el) => this.leadService.update(el._id, { ...el })),
