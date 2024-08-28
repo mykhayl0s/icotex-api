@@ -135,34 +135,47 @@ export class LeadController {
   }
 
   @Get()
-  // @ApiBearerAuth()
-  // @Roles(
-  //   ERole.Admin,
-  //   ERole.Manager,
-  //   ERole.Sale,
-  //   ERole.TeamLead,
-  //   ERole.Retention,
-  // )
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @Roles(
+    ERole.Admin,
+    ERole.Manager,
+    ERole.Sale,
+    ERole.TeamLead,
+    ERole.Retention,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'duplicate', required: false })
   @ApiQuery({ name: 'filterByStatus', required: false })
+  @ApiQuery({ name: 'filterDateFrom', required: false })
+  @ApiQuery({ name: 'filterDateTo', required: false })
   @ApiQuery({ name: 'sortByDate', required: false, enum: ['asc', 'desc'] })
   findAll(
     @Query()
-    { limit, skip, sortByDate, filterByStatus, search, duplicate }: any,
+    {
+      limit,
+      skip,
+      sortByDate,
+      filterByStatus,
+      search,
+      duplicate,
+      filterDateFrom,
+      filterDateTo,
+    }: any,
     @AuthUser() user: AuthUserPayload,
   ) {
     return this.leadService.findAll({
       limit,
       skip,
-      restrictedUser: null, //user.role !== ERole.Admin ? user._id : null,
+      restrictedUser: user.role !== ERole.Admin ? user._id : null,
       sortByDate,
       filterByStatus,
       search,
       duplicate,
+      filterDateFrom,
+      filterDateTo,
     });
   }
 

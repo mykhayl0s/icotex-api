@@ -175,6 +175,8 @@ export class LeadService {
     filterByStatus,
     search,
     duplicate,
+    filterDateFrom,
+    filterDateTo,
   }: {
     skip: any;
     limit: any;
@@ -183,11 +185,12 @@ export class LeadService {
     filterByStatus: string;
     search: string;
     duplicate?: boolean;
+    filterDateFrom?: Date;
+    filterDateTo?: Date;
   }) {
     const query = {
       ...(duplicate && { duplicate }),
       ...(filterByStatus && { status: filterByStatus }),
-
       ...(search && {
         $or: [
           { email: { $regex: search, $options: 'i' } },
@@ -196,7 +199,14 @@ export class LeadService {
           { phone: { $regex: search, $options: 'i' } },
         ],
       }),
-
+      ...(filterDateFrom || filterDateTo
+        ? {
+            createdAt: {
+              ...(filterDateFrom && { $gte: new Date(filterDateFrom) }),
+              ...(filterDateTo && { $lte: new Date(filterDateTo) }),
+            },
+          }
+        : {}),
       sale: undefined,
     };
 
@@ -215,11 +225,8 @@ export class LeadService {
           createdAt: sortByDate ? (sortByDate === 'desc' ? -1 : 1) : -1,
         },
       },
-
-      { $skip: skip ? Number(skip) : undefined },
-
-      { $limit: limit ? Number(limit) : undefined },
-
+      { $skip: skip ? Number(skip) : 0 },
+      { $limit: limit ? Number(limit) : 10 },
       {
         $facet: {
           metadata: [{ $count: 'count' }],
