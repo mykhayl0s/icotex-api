@@ -36,11 +36,13 @@ export class UserService {
     role?: ERole;
   }) {
     const users = await this.userModel.find({ role }).skip(skip).limit(limit);
+
     const count = await this.userModel
       .find({ role })
       .skip(skip)
       .limit(limit)
       .countDocuments({});
+
     return {
       data: users,
       count,

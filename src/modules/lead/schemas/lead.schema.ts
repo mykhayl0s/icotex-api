@@ -9,7 +9,7 @@ export class Lead {
   @Prop({ required: true })
   firstName: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   lastName: string;
 
   @Prop({ required: true })
@@ -21,15 +21,18 @@ export class Lead {
   @Prop({ required: false })
   country: string;
 
+  @Prop({ required: false, default: '' })
+  source: string;
+
   @Prop({
     required: true,
   })
   balance: Map<string, number>;
 
-  @Prop({ type: Types.ObjectId, ref: User.name })
+  @Prop({ type: Types.ObjectId, ref: User.name, default: null })
   sale: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: User.name })
+  @Prop({ type: Types.ObjectId, ref: User.name, default: null })
   retention: Types.ObjectId;
 
   @Prop({ required: true, default: 'new' })
@@ -82,3 +85,17 @@ export class Lead {
 }
 
 export const LeadSchema = SchemaFactory.createForClass(Lead);
+
+LeadSchema.index({ email: 1 });
+LeadSchema.index({ status: 1 });
+
+LeadSchema.index({ createdAt: 1 }, { sparse: true });
+
+LeadSchema.index({ sale: 1 }, { sparse: true });
+LeadSchema.index({ country: 1 }, { sparse: true });
+LeadSchema.index({ retention: 1 }, { sparse: true });
+
+LeadSchema.index({ email: 'text' }, { sparse: true });
+LeadSchema.index({ phone: 'text' }, { sparse: true });
+LeadSchema.index({ lastName: 'text' }, { sparse: true });
+LeadSchema.index({ firstName: 'text' }, { sparse: true });

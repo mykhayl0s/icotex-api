@@ -28,3 +28,8 @@ export class Team {
 }
 
 export const TeamSchema = SchemaFactory.createForClass(Team);
+
+TeamSchema.index({ sales: 1 }, { sparse: true });
+TeamSchema.index({ manager: 1 }, { sparse: true });
+TeamSchema.index({ teamLeads: 1 }, { sparse: true });
+TeamSchema.index({ retentions: 1 }, { sparse: true });

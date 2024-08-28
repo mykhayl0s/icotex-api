@@ -23,7 +23,7 @@ export class CreateLeadDto {
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   lastName: string;
 
   @ApiProperty()
@@ -56,7 +56,17 @@ export class CreateLeadDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  source: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
   retention: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  country: string;
 
   @ApiProperty()
   @IsString()

@@ -34,6 +34,7 @@ export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', async function (next) {
   const user = this as UserDocument;
+
   if (!user.isModified('password')) {
     return next();
   }
@@ -60,3 +61,7 @@ UserSchema.set('toJSON', {
     return ret;
   },
 });
+
+UserSchema.index({ email: 1 }, { unique: true }); // Already implicitly created
+UserSchema.index({ username: 1 });
+UserSchema.index({ role: 1 });

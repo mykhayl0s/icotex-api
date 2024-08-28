@@ -49,17 +49,19 @@ export class LeadService {
         gbp: 0,
       };
 
-      const foundUser = await this.userService.findOne(createLeadDto.email)
-      const foundLead = foundUser ? await this.leadModel.findOne({ user: foundUser._id }) : undefined
+      const foundUser = await this.userService.findOne(createLeadDto.email);
+      const foundLead =
+        foundUser && (await this.leadModel.findOne({ user: foundUser._id }));
 
-      if (!foundUser)  {
+      if (!foundUser) {
         const user = await this.userService.create({
+          role: ERole.User,
           email: createLeadDto.email,
+          username: createLeadDto.email,
           password: createLeadDto.password,
           name: `${createLeadDto.firstName} ${createLeadDto.lastName}`,
-          role: ERole.User,
-          username: createLeadDto.email,
         });
+
         userId = user._id;
         userEmail = user.email;
       }
@@ -69,17 +71,27 @@ export class LeadService {
         balance,
         user: userId,
         duplicated: foundLead?._id,
-        sale: createLeadDto?.sale
-          ? new Types.ObjectId(createLeadDto.sale)
-          : createLeadDto?.sale,
+
+        ...(createLeadDto.sale && {
+          sale: new Types.ObjectId(createLeadDto.sale),
+        }),
+
+        ...(createLeadDto.retention && {
+          retention: new Types.ObjectId(createLeadDto.retention),
+        }),
       });
+
       leadId = lead._id;
+
       return lead;
     } catch (e) {
       if (userId) await this.userService.delete(userId);
       if (leadId) await this.leadModel.findByIdAndDelete(leadId);
+
       console.log(e);
-      throw new BadRequestException(`Something went wrong with ${createLeadDto.email}`);
+      throw new BadRequestException(
+        `Something went wrong with ${createLeadDto.email}`,
+      );
     }
   }
 
@@ -162,6 +174,7 @@ export class LeadService {
     sortByDate,
     filterByStatus,
     search,
+    duplicate,
   }: {
     skip: any;
     limit: any;
@@ -169,48 +182,86 @@ export class LeadService {
     sortByDate: 'asc' | 'desc';
     filterByStatus: string;
     search: string;
+    duplicate?: boolean;
   }) {
-    let query = {
-      ...(search
-        ? {
-            $or: [
-              { email: { $regex: search, $options: 'i' } },
-              { firstName: { $regex: search, $options: 'i' } },
-              { lastName: { $regex: search, $options: 'i' } },
-              { phone: { $regex: search, $options: 'i' } },
-            ],
-          }
-        : {}),
-      ...(filterByStatus
-        ? {
-            status: filterByStatus,
-          }
-        : {}),
+    const query = {
+      ...(duplicate && { duplicate }),
+      ...(filterByStatus && { status: filterByStatus }),
+
+      ...(search && {
+        $or: [
+          { email: { $regex: search, $options: 'i' } },
+          { firstName: { $regex: search, $options: 'i' } },
+          { lastName: { $regex: search, $options: 'i' } },
+          { phone: { $regex: search, $options: 'i' } },
+        ],
+      }),
+
       sale: undefined,
     };
+
     delete query.sale;
+
     if (restrictedUser) {
-      const usrs = await this.teamService.findUserInTeam(restrictedUser);
-      query.sale = { $in: usrs };
+      const users = await this.teamService.findUserInTeam(restrictedUser);
+      query.sale = { $in: users };
     }
 
-    const leads = await this.leadModel
-      .find(query)
-      .skip(skip)
-      .limit(limit)
-      .populate({ path: 'transactions', model: 'Transaction' })
-      .populate({ path: 'sale', model: 'User' })
-      .populate({ path: 'retention', model: 'User' })
-      .sort({ createdAt: sortByDate || 'desc' });
+    const aggregation = await this.leadModel.aggregate([
+      { $match: query },
 
-    const count = await this.leadModel
-      .find(query)
-      .skip(skip)
-      .limit(limit)
-      .countDocuments(query);
+      {
+        $sort: {
+          createdAt: sortByDate ? (sortByDate === 'desc' ? -1 : 1) : -1,
+        },
+      },
+
+      { $skip: skip ? Number(skip) : undefined },
+
+      { $limit: limit ? Number(limit) : undefined },
+
+      {
+        $facet: {
+          metadata: [{ $count: 'count' }],
+
+          data: [
+            {
+              $lookup: {
+                from: 'transactions',
+                localField: 'transactions',
+                foreignField: '_id',
+                as: 'transactions',
+              },
+            },
+
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'sale',
+                foreignField: '_id',
+                as: 'sale',
+              },
+            },
+
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'retention',
+                foreignField: '_id',
+                as: 'retention',
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    const metadata = aggregation?.[0]?.metadata?.[0] || 0;
+    const leads = aggregation?.[0]?.data || [];
+
     return {
       data: leads,
-      count,
+      count: metadata.count,
     };
   }
 

@@ -147,19 +147,22 @@ export class LeadController {
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'search', required: false })
-  @ApiQuery({ name: 'sortByDate', required: false, enum: ['asc', 'desc'] })
+  @ApiQuery({ name: 'duplicate', required: false })
   @ApiQuery({ name: 'filterByStatus', required: false })
+  @ApiQuery({ name: 'sortByDate', required: false, enum: ['asc', 'desc'] })
   findAll(
-    @Query() { limit, skip, sortByDate, filterByStatus, search }: any,
+    @Query()
+    { limit, skip, sortByDate, filterByStatus, search, duplicate }: any,
     @AuthUser() user: AuthUserPayload,
   ) {
     return this.leadService.findAll({
       limit,
       skip,
-      restrictedUser: null,//user.role !== ERole.Admin ? user._id : null,
+      restrictedUser: null, //user.role !== ERole.Admin ? user._id : null,
       sortByDate,
       filterByStatus,
       search,
+      duplicate,
     });
   }
 
