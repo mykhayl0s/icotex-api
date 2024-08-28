@@ -7,9 +7,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'src/common/roles.guard';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])],
-  controllers: [UsersController,],
-  providers: [UserService],
-  exports: [UserService]
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+  ],
+  controllers: [UsersController],
+  providers: [UserService, RolesGuard],
+  exports: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

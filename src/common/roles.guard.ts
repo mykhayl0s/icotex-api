@@ -1,36 +1,47 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  ConflictException,
+} from '@nestjs/common';
 import { ERole } from './roles.enum';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.decorator';
+import { UserService } from 'src/modules/user/users.service';
+import { use } from 'passport';
 
 export interface AuthUserPayload {
-    _id: string;
-    name: string;
-    email: string
-    role: ERole;
+  _id: string;
+  name: string;
+  email: string;
+  role: ERole;
 }
 
 export interface RequestWithUser extends Request {
-    user: AuthUserPayload
+  user: AuthUserPayload;
 }
 
 @Injectable()
 export class RolesGuard implements CanActivate {
+  constructor(
+    private reflector: Reflector,
+    private readonly userService: UserService,
+  ) {}
 
-    constructor(private reflector: Reflector) { }
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const requiredRoles = this.reflector.get<ERole[]>(
+      ROLES_KEY,
+      context.getHandler(),
+    );
 
-    canActivate(context: ExecutionContext): boolean {
+    const { user } = context.switchToHttp().getRequest<RequestWithUser>();
 
-        const requiredRoles = this.reflector.get<ERole[]>(ROLES_KEY, context.getHandler());
-
-        console.log(requiredRoles)
-
-        const { user } = context.switchToHttp().getRequest<RequestWithUser>();
-
-        if (!user) {
-            return false
-        }
-
-        return requiredRoles.includes(user.role)
+    if (!user) {
+      return false;
     }
+    const dbUsr = await this.userService.findById(user._id);
+    if (dbUsr.role !== user.role) throw new ConflictException('Role changed');
+    return requiredRoles.includes(user.role);
+  }
 }
